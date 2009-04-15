@@ -1,0 +1,9 @@
+<ivy-module version="2.0">
+    <info organisation="de.zeiban" module="loppe"/>
+    <dependencies>
+        <dependency org="hsqldb" name="hsqldb" rev="1.8.0.7"/>
+        <dependency org="log4j" name="log4j" rev="1.2.14"/>
+        <dependency org="org.eclipse.swt.carbon" name="macosx" rev="3.4.1-v3452b"/>
+        <dependency org="org.eclipse.swt" name="swt" rev="3.4.2-v3452b"/>
+    </dependencies>
+</ivy-module>
