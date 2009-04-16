@@ -15,7 +15,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -46,7 +45,7 @@ import org.eclipse.swt.widgets.Text;
 
 import de.zeiban.loppe.ResultsDialog.Result;
 
-public class Flohmarkt implements ModifyListener, KeyListener {
+public class Flohmarkt implements KeyListener {
 
     private Shell shell;
     private Composite content;
@@ -95,7 +94,6 @@ public class Flohmarkt implements ModifyListener, KeyListener {
         content.addKeyListener(this);
         final RowLayout layout = new RowLayout(SWT.VERTICAL);
         content.setLayout(layout);
-        //createButtonAuswertung(content);
         createButtons(content);
         summeGesamt = createInfo(content);
         updateSumme();
@@ -103,7 +101,7 @@ public class Flohmarkt implements ModifyListener, KeyListener {
         updateKundeCount();
         createPlatz(content);
         createLabel(content);
-        createRow(content);
+        rows.add(createRow(content));
         content.setSize(800, 600);
         sc.setContent(content);
         
@@ -128,7 +126,7 @@ public class Flohmarkt implements ModifyListener, KeyListener {
             @Override
             public void widgetSelected(final SelectionEvent e) {
 //                System.out.println("BUTTON");
-                final List<ResultsDialog.Result> testlist = new ArrayList<Result>();
+                final List<ResultsDialog.Result> resultList = new ArrayList<Result>();
                 Statement stmt = null;
                 ResultSet rs = null;
                 try {
@@ -141,7 +139,7 @@ public class Flohmarkt implements ModifyListener, KeyListener {
                         res.summe = summe;
                         res.proz25 = summe.multiply(new BigDecimal(0.25));
                         res.proz75 = summe.multiply(new BigDecimal(0.75));
-                        testlist.add(res);
+                        resultList.add(res);
                     }
                 } catch (final SQLException e1) {
                     // TODO Auto-generated catch block
@@ -150,8 +148,7 @@ public class Flohmarkt implements ModifyListener, KeyListener {
                     try {rs.close();} catch (final Exception ignore) {}
                     try {stmt.close();} catch (final Exception ignore) {}
                 }
-                final List<ResultsDialog.Result> emptyList = Collections.emptyList();
-                new ResultsDialog(shell, SWT.SHELL_TRIM).open(testlist);
+                new ResultsDialog(shell, SWT.SHELL_TRIM).open(resultList);
             }
         });
     }
@@ -339,51 +336,41 @@ public class Flohmarkt implements ModifyListener, KeyListener {
         nummer.setLayoutData(rowData);
         nummer.setToolTipText("Nummer");
         nummer.addVerifyListener(new NumberVerifyer());
-        //nummer.addModifyListener(this);
         final Text preis = new Text(composite, SWT.BORDER);
         final RowData rowDataPreis = new RowData();
         rowDataPreis.width = 80;
         preis.setLayoutData(rowDataPreis);
-        //preis.addModifyListener(this);
         preis.addKeyListener(this);
         preis.setToolTipText("Preis in €");
         preis.addVerifyListener(new MoneyVerifyer());
-        rows.add(composite);
         nummer.setFocus();
         return composite;
     }
 
 //    @Override
-    public void modifyText(final ModifyEvent e) {
-//        System.out.println(e);
-//        System.out.println(e.widget);
-//        System.out.println(((Text)e.widget).getText());
-    }
-
-//    @Override
     public void keyPressed(final KeyEvent e) {
-//        System.out.println(e.keyCode);
     }
 
 //    @Override
     public void keyReleased(final KeyEvent e) {
         if ((int)e.character  == 13 && e.stateMask == 0) {
             //System.out.println("neue Zeile!");
-            createRow(content);
+            rows.add(createRow(content));
             content.pack(true);
             final ScrolledComposite sc = ((ScrolledComposite)content.getParent());
             sc.setOrigin(0, Integer.MAX_VALUE);
         } else if ((int)e.character  == 13 && e.stateMask == SWT.CTRL) {
             final BigDecimal summe = calculate();
             final MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO);
-            messageBox.setMessage("Daten �bernehmen?\n" + summe.toString());
+            messageBox.setMessage("Daten übernehmen?\n" + summe.toString());
             if (messageBox.open() == SWT.YES) {
                 saveValues();
-                disposeTexts();
+                disposeRows();
+                content.pack(true);
                 updateSumme();
                 updateKundeCount();
 //                System.out.println("muss neue Zeile machen");
-                createRow(content);
+                rows.add(createRow(content));
                 content.pack(true);
             }
         }
@@ -400,7 +387,7 @@ public class Flohmarkt implements ModifyListener, KeyListener {
         return ergebnis;
     }
     
-    private void disposeTexts() {
+    private void disposeRows() {
         for (final Composite row : rows) {
             row.dispose();
         }
