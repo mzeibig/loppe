@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -395,14 +396,15 @@ public class Flohmarkt implements KeyListener {
     }
     
     private void updateSumme() {
-        Statement stmt = null;
+        Statement stmt = null; 
         ResultSet rs = null;
+        NumberFormat f = java.text.NumberFormat.getCurrencyInstance();
         try {
             stmt = connection.createStatement();
             rs = stmt.executeQuery("select sum(preis) from kauf");
             rs.next();
             final BigDecimal gessum = rs.getBigDecimal(1);
-            summeGesamt.setText(gessum == null ? "0.00" : gessum.toString());
+            summeGesamt.setText(f.format(gessum == null ? 0.0 : gessum));
 
         } catch (final SQLException e) {
             // TODO Auto-generated catch block
