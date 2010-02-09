@@ -72,8 +72,8 @@ public class ResultsDialog extends Dialog {
 
     private Table createContents(final Shell shell) {
     	final ScrolledComposite sc = new ScrolledComposite(shell, SWT.BORDER|SWT.V_SCROLL);
-        sc.setAlwaysShowScrollBars(true);
-        sc.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        sc.setAlwaysShowScrollBars(false);
+        //sc.setLayoutData(new GridData(GridData.FILL_BOTH));
         //sc.setBackgroundMode(SWT.INHERIT_DEFAULT);
         Composite content = new Composite(sc, SWT.NONE);
         content.setLayout(new FillLayout());
@@ -105,7 +105,7 @@ public class ResultsDialog extends Dialog {
             ti.setText(3, f.format(result.proz75));
             idx++;
         }
-        content.setSize(500, 300);
+        content.setSize(450, 500);
         sc.setContent(content);
         return table;
     }
