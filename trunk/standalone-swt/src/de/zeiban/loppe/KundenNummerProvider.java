@@ -6,37 +6,29 @@ package de.zeiban.loppe;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+
+import de.zeiban.loppe.dbcore.DbTemplate;
+import de.zeiban.loppe.dbcore.ResultCallbackWithReturn;
 
 class KundenNummerProvider {
-	Connection connection;
+	private final DbTemplate dbTemplate;
 
-	public KundenNummerProvider(Connection connection) {
-		this.connection = connection;
+	public KundenNummerProvider(final Connection connection) {
+		dbTemplate = new DbTemplate(connection);
 	}
 
 	String getNextKundeCount() {
-		Statement stmt = null;
-		ResultSet rs = null;
-		try {
-			stmt = connection.createStatement();
-			rs = stmt.executeQuery("select max(kunde) from kauf");
-			int count;
-			if (!rs.next())
-				count = 1;
-			else
-				count = rs.getInt(1);
-			return String.valueOf(count + 1);
-
-		} catch (final SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return "";
-		} finally {
-			try {
-				stmt.close();
-			} catch (final Exception ignore) {
+		return (String) dbTemplate.selectObject("select max(kunde) from kauf", new ResultCallbackWithReturn() {
+			public Object doWithResultset(final ResultSet rs) throws SQLException {
+				int count;
+				if (!rs.next())
+					count = 1;
+				else
+					count = rs.getInt(1);
+				return String.valueOf(count + 1);
+				
 			}
-		}
+			
+		});
 	}
 }

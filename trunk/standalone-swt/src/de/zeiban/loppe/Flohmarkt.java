@@ -221,12 +221,13 @@ public class Flohmarkt implements KeyListener {
 		nummer.setLayoutData(rowData);
 		nummer.setToolTipText("Nummer");
 		nummer.addVerifyListener(new NumberVerifyer());
+		nummer.addFocusListener(new BlackListCheckFocusAdapter(this.shell, this.connection));
 		final Text preis = new Text(composite, SWT.BORDER);
 		final RowData rowDataPreis = new RowData();
 		rowDataPreis.width = 80;
 		preis.setLayoutData(rowDataPreis);
 		preis.addKeyListener(this);
-		preis.setToolTipText("Preis in â‚¬");
+		preis.setToolTipText("Preis in Û");
 		preis.addVerifyListener(new MoneyVerifyer());
 		nummer.setFocus();
 		return composite;
@@ -247,7 +248,7 @@ public class Flohmarkt implements KeyListener {
 		} else if ((int)e.character  == 13 && e.stateMask == SWT.CTRL) {
 			final BigDecimal summe = calculate(rows);
 			final MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO);
-			messageBox.setMessage("Daten Ã¼bernehmen?\n" + summe.toString());
+			messageBox.setMessage("Daten †bernehmen?\n" + summe.toString());
 			if (messageBox.open() == SWT.YES) {
 				new DataSaver(connection).saveValues(rows, kundeCount.getText(), inst);
 				disposeRows();
