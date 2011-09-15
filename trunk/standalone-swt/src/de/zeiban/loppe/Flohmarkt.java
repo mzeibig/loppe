@@ -140,6 +140,7 @@ public class Flohmarkt implements KeyListener {
 		infoItem.addSelectionListener(new InfoSelectionAdapter(parent, loppeShare));
 		MenuItem exitItem = new MenuItem(verwaltungMenu,SWT.NONE);
 		exitItem.setText("Exit");
+		exitItem.addSelectionListener(new ExitSelectionAdapter(parent));
 
 		Menu adminMenu = new Menu(menuBar);
 		adminItem.setMenu(adminMenu);
@@ -149,6 +150,9 @@ public class Flohmarkt implements KeyListener {
 		MenuItem importItem = new MenuItem(adminMenu,SWT.NONE);
 		importItem.setText("Daten importieren");
 		importItem.addSelectionListener(new ExportSelectionAdapter(shell, connection));
+		MenuItem dbresetItem = new MenuItem(adminMenu,SWT.NONE);
+		dbresetItem.setText("Datenbank zurücksetzen");
+		dbresetItem.addSelectionListener(new DBResetSelectionAdapter(shell, connection));		
 		//shell.setMenuBar(menuBar);
 		return menuBar;
 

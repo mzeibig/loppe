@@ -11,6 +11,6 @@ final class MoneyVerifyer implements VerifyListener {
             public void verifyText(VerifyEvent event) {
                 event.doit = false;
                 char myChar = event.character;
-                event.doit = Character.isDigit(myChar) || myChar == '\b' || myChar == '.';
+                event.doit = Character.isDigit(myChar) || myChar == '\b' || myChar == '.' || myChar == '-';
             }
     }

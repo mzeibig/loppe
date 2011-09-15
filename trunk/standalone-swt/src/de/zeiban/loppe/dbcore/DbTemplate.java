@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DbTemplate {
 	final Connection connection;
@@ -81,4 +82,17 @@ public class DbTemplate {
 			try {stmt.close();} catch (final Exception ignore) {}
 		}
 	}
+	
+	public void execute(final String sql) {
+		Statement stmt = null;
+		ResultSet rs = null;
+		try {
+			boolean b = stmt.execute(sql);
+		} catch (final SQLException e1) {
+			e1.printStackTrace();
+		} finally {
+			try {rs.close();} catch (final Exception ignore) {}
+			try {stmt.close();} catch (final Exception ignore) {}
+		}
+	}	
 }
