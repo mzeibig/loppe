@@ -29,22 +29,27 @@ final class BlackListCheckFocusAdapter extends FocusAdapter {
 
 	@Override
 	public void focusLost(final FocusEvent e) {
-		final Text source = (Text) e.getSource();
-		final Integer nummer = Integer.valueOf(source.getText());
-		dbTemplate.select("select 1 from BLACKLIST where NUMMER = ?", 
-			new ParamProvider() {
-				public void fillParams(PreparedStatement stmt) throws SQLException {
-					stmt.setInt(1, nummer.intValue());
-				}
-			}, 
-			new ResultCallback() {
-				public void doWithResultset(ResultSet rs) throws SQLException {
-					if (rs.next()) {
-						source.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
-					} else {
-						source.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-					}
-				}
-			});
+//		final Text source = (Text) e.getSource();
+//		try {
+//			final Integer nummer = Integer.valueOf(source.getText());
+//
+//			dbTemplate.select("select 1 from BLACKLIST where NUMMER = ?", 
+//					new ParamProvider() {
+//				public void fillParams(PreparedStatement stmt) throws SQLException {
+//					stmt.setInt(1, nummer.intValue());
+//				}
+//			}, 
+//			new ResultCallback() {
+//				public void doWithResultset(ResultSet rs) throws SQLException {
+//					if (rs.next()) {
+//						source.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+//					} else {
+//						source.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+//					}
+//				}
+//			});
+//		} catch (NumberFormatException nfe) {
+//			
+//		}
 	}
 }

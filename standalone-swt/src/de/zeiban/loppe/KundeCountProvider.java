@@ -10,10 +10,10 @@ import java.sql.SQLException;
 import de.zeiban.loppe.dbcore.DbTemplate;
 import de.zeiban.loppe.dbcore.ResultCallbackWithReturn;
 
-class KundenNummerProvider {
+class KundeCountProvider {
 	private final DbTemplate dbTemplate;
 
-	public KundenNummerProvider(final Connection connection) {
+	public KundeCountProvider(final Connection connection) {
 		dbTemplate = new DbTemplate(connection);
 	}
 

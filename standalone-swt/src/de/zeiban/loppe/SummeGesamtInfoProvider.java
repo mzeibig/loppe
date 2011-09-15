@@ -10,11 +10,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.NumberFormat;
 
-class Summer implements Summenprovider {
+class SummeGesamtInfoProvider implements Summenprovider {
 
 	private final Connection connection;
 
-	public Summer(Connection connection) {
+	public SummeGesamtInfoProvider(Connection connection) {
 		this.connection = connection;
 	}
 

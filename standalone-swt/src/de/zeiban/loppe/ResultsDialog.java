@@ -78,11 +78,11 @@ public class ResultsDialog extends Dialog {
         c3.setText("Summe");
         c3.setWidth(60);
         final TableColumn c4 = new TableColumn(table, SWT.RIGHT);
-        c4.setText("25-Prozent");
+        c4.setText("Kiga-Prozent");
         c4.setWidth(100);
         final TableColumn c5 = new TableColumn(table, SWT.RIGHT);
-        c5.setText("75-Prozent");
-        c5.setWidth(100);
+        c5.setText("Verkäufer-Prozent");
+        c5.setWidth(120);
         final NumberFormat f = java.text.NumberFormat.getCurrencyInstance();
         int idx = 1;
         for (final Result result : data) {
@@ -90,8 +90,8 @@ public class ResultsDialog extends Dialog {
             //ti.setText(String.valueOf(idx));
             ti.setText(0, String.valueOf(result.nummer));
             ti.setText(1, f.format(result.summe));
-            ti.setText(2, f.format(result.proz25));
-            ti.setText(3, f.format(result.proz75));
+            ti.setText(2, f.format(result.prozKiga));
+            ti.setText(3, f.format(result.prozSeller));
             idx++;
         }
         content.setSize(450, 500);
@@ -128,8 +128,8 @@ public class ResultsDialog extends Dialog {
 		    		for (final Result result: data) {
 		    			final StringBuffer sb = new StringBuffer();
 		    			sb.append(result.nummer).append(";");
-		    			sb.append(result.proz25).append(";");
-		    			sb.append(result.proz75).append(";");
+		    			sb.append(result.prozKiga).append(";");
+		    			sb.append(result.prozSeller).append(";");
 		    			sb.append(result.summe);
 		    			writer.println(sb.toString());
 		    		}
@@ -148,8 +148,8 @@ public class ResultsDialog extends Dialog {
 	static class Result {
         Integer nummer;
         BigDecimal summe;
-        BigDecimal proz25;
-        BigDecimal proz75;
+        BigDecimal prozKiga;
+        BigDecimal prozSeller;
     }
     
     

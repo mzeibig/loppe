@@ -22,10 +22,12 @@ import de.zeiban.loppe.dbcore.ResultCallback;
 final class AuswertungSelectionAdapter extends SelectionAdapter {
 	private final Shell shell;
 	private DbTemplate dbTemplate;
+	private BigDecimal loppeShare;
 	
-	public AuswertungSelectionAdapter(final Shell shell, final Connection connection) {
+	public AuswertungSelectionAdapter(final Shell shell, final Connection connection, final BigDecimal loppeShare) {
 		this.shell = shell;
 		this.dbTemplate = new DbTemplate(connection);
+		this.loppeShare = loppeShare;
 	}
 
 	@Override
@@ -39,8 +41,8 @@ final class AuswertungSelectionAdapter extends SelectionAdapter {
 							res.nummer = rs.getInt("nummer");
 							final BigDecimal summe = rs.getBigDecimal(2);
 							res.summe = summe;
-							res.proz25 = summe.multiply(new BigDecimal(0.25));
-							res.proz75 = summe.multiply(new BigDecimal(0.75));
+							res.prozKiga = summe.multiply(loppeShare);
+							res.prozSeller = summe.subtract(res.prozKiga);
 							resultList.add(res);
 						}
 					}
