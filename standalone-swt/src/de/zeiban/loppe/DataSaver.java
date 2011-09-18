@@ -19,18 +19,14 @@ class DataSaver {
 	void saveValues(List<Composite> rows, String kundeCount, int inst) {
 		PreparedStatement stmt = null;
 		try {
-			stmt = connection
-					.prepareStatement("insert into kauf values(?, ?, ?, ?)");
+			stmt = connection.prepareStatement("insert into kauf values(?, ?, ?, ?)");
 			for (final Composite row : rows) {
-				final String textPreis = ((Text) row.getChildren()[1])
-						.getText();
-				final String textNummer = ((Text) row.getChildren()[0])
-						.getText();
+				final String textPreis = ((Text) row.getChildren()[1]).getText();
+				final String textNummer = ((Text) row.getChildren()[0]).getText();
 				final String textKunde = kundeCount;
 				if (textPreis.length() == 0 || textNummer.length() == 0)
 					continue;
-				System.out.println(textKunde + ":" + textNummer + ":"
-						+ textPreis);
+				System.out.println(textKunde + ":" + textNummer + ":" + textPreis);
 				stmt.setInt(1, inst);
 				stmt.setInt(2, Integer.parseInt(textKunde));
 				stmt.setInt(3, Integer.parseInt(textNummer));
