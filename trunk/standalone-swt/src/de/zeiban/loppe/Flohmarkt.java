@@ -252,6 +252,7 @@ public class Flohmarkt implements KeyListener {
 				//                System.out.println("muss neue Zeile machen");
 				rows.add(createRow(content));
 				content.pack(true);
+				topComposite.letzterKunde.setText(NumberFormat.getCurrencyInstance().format(summe));
 			}
 			if (messageBoxAnswer == SWT.CANCEL) {
 				final MessageBox confirmMessageBox = new MessageBox(shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO);

@@ -13,6 +13,7 @@ public class TopComposite extends Composite {
 	protected Label summeGesamtInfo;
 	protected Label kundeCountInfo;
 	protected Label zwischensumme;
+	protected Label letzterKunde;
 
 	public TopComposite(final Composite parent, final Connection connection) {
 		super(parent, SWT.BORDER);
@@ -23,6 +24,7 @@ public class TopComposite extends Composite {
 		kundeCountInfo = createLabelValueComposite(this, "Anzahl Kunden:", "0");
 		kundeCountInfo.setText(new KundeCountProvider(connection).getNextKundeCount());
 		zwischensumme = createLabelValueComposite(this, "Zwischensumme:", "0.00");
+		letzterKunde = createLabelValueComposite(this, "letzter Kunde:", "0.00");
 	}
 
 	private Label createLabelValueComposite(final Composite parent, String labelText, String initValue) {
@@ -36,7 +38,7 @@ public class TopComposite extends Composite {
 		label.setText(labelText);
 		final Label cnt = new Label(composite, SWT.CENTER);
 		final RowData rowDataCnt = new RowData();
-		rowDataCnt.width = 80;
+		rowDataCnt.width = 60;
 		cnt.setLayoutData(rowDataCnt);
 		cnt.setText(initValue);
 		return cnt;
