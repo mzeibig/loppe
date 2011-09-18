@@ -1,6 +1,7 @@
 package de.zeiban.loppe;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -233,7 +234,7 @@ public class Flohmarkt implements KeyListener {
 			for (Composite row: rows) {
 				zwSumme = zwSumme.add(new BigDecimal(((Text) row.getChildren()[1]).getText()));
 			}
-			topComposite.zwischensumme.setText(NumberFormat.getCurrencyInstance().format(zwSumme));
+			topComposite.zwischensumme.setText(NumberFormat.getCurrencyInstance().format(calculate(rows)));
 			rows.add(createRow(content));
 			content.pack(true);
 			final ScrolledComposite sc = ((ScrolledComposite)content.getParent());
@@ -253,6 +254,7 @@ public class Flohmarkt implements KeyListener {
 				rows.add(createRow(content));
 				content.pack(true);
 				topComposite.letzterKunde.setText(NumberFormat.getCurrencyInstance().format(summe));
+				topComposite.zwischensumme.setText(NumberFormat.getCurrencyInstance().format(BigInteger.ZERO));
 			}
 			if (messageBoxAnswer == SWT.CANCEL) {
 				final MessageBox confirmMessageBox = new MessageBox(shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO);
