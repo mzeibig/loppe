@@ -34,10 +34,10 @@ final class DBResetSelectionAdapter extends SelectionAdapter {
 	@Override
 	public void widgetSelected(final SelectionEvent e) {
 		final MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO);
-		messageBox.setMessage("Datenbank jetzt zurücksetzen ?\n!!!Achtung: Alle Daten werden gelöscht !!!");
+		messageBox.setMessage("Datenbank jetzt zurÃ¼cksetzen ?\n!!!Achtung: Alle Daten werden gelÃ¶scht !!!");
 		if (messageBox.open() == SWT.YES) {   
 			final MessageBox confirmMessageBox = new MessageBox(shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO);
-			confirmMessageBox.setMessage("Wirklich alle Daten aus der Datenbank löschen ?");
+			confirmMessageBox.setMessage("Wirklich alle Daten aus der Datenbank lÃ¶schen ?");
 			if (confirmMessageBox.open() == SWT.YES) {
 				//dbTemplate.execute("delete from kauf");
 			}

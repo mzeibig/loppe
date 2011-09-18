@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Class-Path: hsqldb-1.8.0.7.jar log4j-1.2.14.jar swt.jar
+Main-Class: de.zeiban.loppe.Flohmarkt
+Implementation-Title: Flohmarkt
+Implementation-Version: 1.0
+Implementation-Vendor: zeiban.de

@@ -83,15 +83,15 @@ public class DbTemplate {
 		}
 	}
 	
-	public void execute(final String sql) {
+	public boolean execute(final String sql) {
 		Statement stmt = null;
-		ResultSet rs = null;
 		try {
-			boolean b = stmt.execute(sql);
+			stmt = connection.prepareStatement(sql);
+			return stmt.execute(sql);
 		} catch (final SQLException e1) {
 			e1.printStackTrace();
+			return false;
 		} finally {
-			try {rs.close();} catch (final Exception ignore) {}
 			try {stmt.close();} catch (final Exception ignore) {}
 		}
 	}	

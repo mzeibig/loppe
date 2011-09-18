@@ -81,7 +81,7 @@ public class ResultsDialog extends Dialog {
         c4.setText("Kiga-Prozent");
         c4.setWidth(100);
         final TableColumn c5 = new TableColumn(table, SWT.RIGHT);
-        c5.setText("Verk‰ufer-Prozent");
+        c5.setText("Verk√§ufer-Prozent");
         c5.setWidth(120);
         final NumberFormat f = java.text.NumberFormat.getCurrencyInstance();
         int idx = 1;
@@ -144,14 +144,11 @@ public class ResultsDialog extends Dialog {
 		}
 	}
 
-
 	static class Result {
         Integer nummer;
         BigDecimal summe;
         BigDecimal prozKiga;
         BigDecimal prozSeller;
     }
-    
-    
 
 }
