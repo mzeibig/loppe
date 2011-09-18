@@ -31,7 +31,7 @@ public class TopComposite extends Composite {
 		composite.setLayout(compositeLayout);
 		final Label label = new Label(composite, SWT.NONE);
 		final RowData rowData = new RowData();
-		rowData.width = 100;
+		rowData.width = 110;
 		label.setLayoutData(rowData);
 		label.setText(labelText);
 		final Label cnt = new Label(composite, SWT.CENTER);
