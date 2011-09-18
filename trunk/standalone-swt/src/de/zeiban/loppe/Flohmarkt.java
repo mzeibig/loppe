@@ -29,6 +29,26 @@ import de.zeiban.loppe.properties.PropertyReader;
 
 public class Flohmarkt implements KeyListener {
 
+	private final class CocoaQuitListener implements Listener {
+		public void handleEvent(Event event) {
+			System.out.println("Quit");
+			shell.close();
+			try {connection.close();} catch (final Exception ignore){}
+		}
+	}
+
+	private final class CocoaSettingsListener implements Listener {
+		public void handleEvent(Event event) {
+			System.out.println("Settings");
+		}
+	}
+
+	private final class CocoaAboutListener implements Listener {
+		public void handleEvent(Event event) {
+			System.out.println("About");
+		}
+	}
+
 	private Shell shell;
 	private Composite content;
 	private final List<Composite> rows = new ArrayList<Composite>();
@@ -55,7 +75,7 @@ public class Flohmarkt implements KeyListener {
 	}
 
 	private void doit() throws Exception {
-		connection = DriverManager.getConnection("jdbc:hsqldb:file:testdb2", "sa", "");
+		connection = DriverManager.getConnection("jdbc:hsqldb:file:testdb2;shutdown=true", "sa", "");
 		inst = System.getProperty("user.name").hashCode();
 		//        System.out.println(inst);
 		Display.setAppName("Flohmarkt");
@@ -79,22 +99,10 @@ public class Flohmarkt implements KeyListener {
 		
 		if ( isMac() ) {
 	        CocoaUIEnhancer enhancer = new CocoaUIEnhancer("Flohmarkt");
-	        enhancer.hookApplicationMenu(display, new Listener() {
-				public void handleEvent(Event event) {
-					System.out.println("Quit");
-					shell.close();
-				}
-			}, 
-			new Listener() {
-				public void handleEvent(Event event) {
-					System.out.println("about");
-				}
-			}, 
-			new Listener() {
-				public void handleEvent(Event event) {
-					System.out.println("Settings");
-				}
-			});
+	        enhancer.hookApplicationMenu(display, 
+	        		new CocoaQuitListener(), 
+	        		new CocoaAboutListener(), 
+	        		new CocoaSettingsListener());
 	    }
 		
 		//content.
@@ -113,9 +121,9 @@ public class Flohmarkt implements KeyListener {
 				display.sleep();
 			}
 		}
+		try {connection.close();} catch (final Exception ignore){}
 		resizeListener.dispose();
 		display.dispose();
-		try {connection.close();} catch (final Exception ignore){}
 	}
 
 	private Menu createMenu(final Shell parent) {
@@ -143,7 +151,7 @@ public class Flohmarkt implements KeyListener {
 		if (!isMac()) {
 			MenuItem exitItem = new MenuItem(verwaltungMenu,SWT.NONE);
 			exitItem.setText("Exit");
-			exitItem.addSelectionListener(new ExitSelectionAdapter(parent));
+			exitItem.addSelectionListener(new ExitSelectionAdapter(parent, connection));
 		}
 		Menu adminMenu = new Menu(menuBar);
 		adminItem.setMenu(adminMenu);

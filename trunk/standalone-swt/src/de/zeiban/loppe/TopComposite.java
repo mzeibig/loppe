@@ -12,49 +12,33 @@ public class TopComposite extends Composite {
 
 	protected Label summeGesamtInfo;
 	protected Label kundeCountInfo;
+	protected Label zwischensumme;
 
 	public TopComposite(final Composite parent, final Connection connection) {
 		super(parent, SWT.BORDER);
 		final RowLayout topCompositeLayout = new RowLayout(SWT.HORIZONTAL);
 		this.setLayout(topCompositeLayout);
-		summeGesamtInfo = createSummeGesamtInfoLabel(this);
+		summeGesamtInfo = createLabelValueComposite(this, "Summe:", "0.00");
 		summeGesamtInfo.setText(new SummeGesamtInfoProvider(connection).getSumme());
-		kundeCountInfo = createKundeCountInfoLabel(this);
+		kundeCountInfo = createLabelValueComposite(this, "Anzahl Kunden:", "0");
 		kundeCountInfo.setText(new KundeCountProvider(connection).getNextKundeCount());
+		zwischensumme = createLabelValueComposite(this, "Zwischensumme:", "0.00");
 	}
 
-	private Label createSummeGesamtInfoLabel(final Composite parent) {
+	private Label createLabelValueComposite(final Composite parent, String labelText, String initValue) {
 		final Composite composite = new Composite(parent, SWT.NONE);
 		final RowLayout compositeLayout = new RowLayout(SWT.HORIZONTAL);
 		composite.setLayout(compositeLayout);
-		final Label summe = new Label(composite, SWT.NONE);
-		final RowData rowDataPreis = new RowData();
-		rowDataPreis.width = 80;
-		summe.setLayoutData(rowDataPreis);
-		summe.setText("Summe:");
-		final Label summecnt = new Label(composite, SWT.CENTER);
-		final RowData rowDataSummecnt = new RowData();
-		rowDataSummecnt.width = 80;
-		summecnt.setLayoutData(rowDataSummecnt);
-		summecnt.setText("0.00");
-		return summecnt;
+		final Label label = new Label(composite, SWT.NONE);
+		final RowData rowData = new RowData();
+		rowData.width = 100;
+		label.setLayoutData(rowData);
+		label.setText(labelText);
+		final Label cnt = new Label(composite, SWT.CENTER);
+		final RowData rowDataCnt = new RowData();
+		rowDataCnt.width = 80;
+		cnt.setLayoutData(rowDataCnt);
+		cnt.setText(initValue);
+		return cnt;
 	}
-
-	private Label createKundeCountInfoLabel(final Composite parent) {
-		final Composite composite = new Composite(parent, SWT.NONE);
-		final RowLayout compositeLayout = new RowLayout(SWT.HORIZONTAL);
-		composite.setLayout(compositeLayout);
-		final Label kunde = new Label(composite, SWT.CENTER);
-		final RowData rowDataPreis = new RowData();
-		rowDataPreis.width = 100;
-		kunde.setLayoutData(rowDataPreis);
-		kunde.setText("Anzahl Kunden:");
-		final Label kundecnt = new Label(composite, SWT.CENTER);
-		final RowData rowDataKundecnt = new RowData();
-		rowDataKundecnt.width = 80;
-		kundecnt.setLayoutData(rowDataKundecnt);
-		kundecnt.setText("0");
-		return kundecnt;
-	}    
-
 }
