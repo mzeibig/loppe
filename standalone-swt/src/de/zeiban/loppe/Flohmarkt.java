@@ -1,8 +1,10 @@
 package de.zeiban.loppe;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -227,6 +229,11 @@ public class Flohmarkt implements KeyListener {
 	public void keyReleased(final KeyEvent e) {
 		if ((int)e.character  == 13 && e.stateMask == 0) {
 			//System.out.println("neue Zeile!");
+			BigDecimal zwSumme = new BigDecimal(0.0);
+			for (Composite row: rows) {
+				zwSumme = zwSumme.add(new BigDecimal(((Text) row.getChildren()[1]).getText()));
+			}
+			topComposite.zwischensumme.setText(NumberFormat.getCurrencyInstance().format(zwSumme));
 			rows.add(createRow(content));
 			content.pack(true);
 			final ScrolledComposite sc = ((ScrolledComposite)content.getParent());
