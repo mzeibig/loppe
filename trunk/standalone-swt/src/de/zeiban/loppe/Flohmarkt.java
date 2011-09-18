@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PropertyResourceBundle;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -14,10 +13,11 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
@@ -34,8 +34,7 @@ public class Flohmarkt implements KeyListener {
 	private final List<Composite> rows = new ArrayList<Composite>();
 	private Connection connection; 
 
-	private Label summeGesamtInfo;
-	private Label kundeCountInfo;
+	private TopComposite topComposite;
 	private int inst;
 	private BigDecimal loppeShare;
 
@@ -46,18 +45,21 @@ public class Flohmarkt implements KeyListener {
 		loppe.doit();
 	}
 
+	private static boolean isMac() {
+        return SWT.getPlatform().equals("cocoa");
+    }
+
 	private void readProzent() {
         BigDecimal n = PropertyReader.getNumProperty("loppe.prozent", new BigDecimal(25));	
         loppeShare = n.divide(new BigDecimal(100));
-		
 	}
 
 	private void doit() throws Exception {
 		connection = DriverManager.getConnection("jdbc:hsqldb:file:testdb2", "sa", "");
 		inst = System.getProperty("user.name").hashCode();
 		//        System.out.println(inst);
-		final Display display = new Display();
 		Display.setAppName("Flohmarkt");
+		final Display display = new Display();
 		shell = new Shell(display);
 		shell.setText("Flohmarkt");
 		//shell.setAlpha(200);
@@ -75,11 +77,28 @@ public class Flohmarkt implements KeyListener {
 		content.setLayout(layout);
 		//createButtons(content);
 		
+		if ( isMac() ) {
+	        CocoaUIEnhancer enhancer = new CocoaUIEnhancer("Flohmarkt");
+	        enhancer.hookApplicationMenu(display, new Listener() {
+				public void handleEvent(Event event) {
+					System.out.println("Quit");
+					shell.close();
+				}
+			}, 
+			new Listener() {
+				public void handleEvent(Event event) {
+					System.out.println("about");
+				}
+			}, 
+			new Listener() {
+				public void handleEvent(Event event) {
+					System.out.println("Settings");
+				}
+			});
+	    }
+		
 		//content.
-		summeGesamtInfo = createSummeGesamtInfoLabel(content);
-		summeGesamtInfo.setText(new SummeGesamtInfoProvider(connection).getSumme());
-		kundeCountInfo = createKundeCountInfoLabel(content);
-		kundeCountInfo.setText(new KundeCountProvider(connection).getNextKundeCount());
+		this.topComposite = new TopComposite(content, connection);
 		createPlatz(content);
 		createLabel(content);
 		rows.add(createRow(content));
@@ -99,30 +118,13 @@ public class Flohmarkt implements KeyListener {
 		try {connection.close();} catch (final Exception ignore){}
 	}
 
-//	private void createButtonAuswertung(final Composite parent) {
-//		final Button auswertung = new Button(parent, SWT.PUSH);
-//		auswertung.setText("Auswertung");
-//		auswertung.addSelectionListener(new AuswertungSelectionAdapter(shell, connection, loppeShare));
-//	}
-//
-//	private void createButtonExport(final Composite parent) {
-//		final Button export = new Button(parent, SWT.PUSH);
-//		export.setText("Export");
-//		export.addSelectionListener(new ExportSelectionAdapter(shell, connection));
-//	}
-//
-//	private void createButtonImport(final Composite parent) {
-//		final Button importb = new Button(parent, SWT.PUSH);
-//		importb.setText("Import");
-//		importb.addSelectionListener(new ImportSelectionAdapter(shell, connection, summeGesamt, new Summer(connection)));
-//	}
-
 	private Menu createMenu(final Shell parent) {
 		Menu menuBar = new Menu (parent, SWT.BAR);
 		MenuItem verwaltungItem = new MenuItem(menuBar,SWT.CASCADE);
 		verwaltungItem.setText("Verwaltung");
 		MenuItem adminItem = new MenuItem(menuBar,SWT.CASCADE);
 		adminItem.setText("Admin");
+		
 		MenuItem hilfeItem = new MenuItem(menuBar,SWT.CASCADE);
 		hilfeItem.setText("Hilfe");
 
@@ -138,10 +140,11 @@ public class Flohmarkt implements KeyListener {
 		MenuItem infoItem = new MenuItem(verwaltungMenu,SWT.NONE);
 		infoItem.setText("Info");	
 		infoItem.addSelectionListener(new InfoSelectionAdapter(parent, loppeShare));
-		MenuItem exitItem = new MenuItem(verwaltungMenu,SWT.NONE);
-		exitItem.setText("Exit");
-		exitItem.addSelectionListener(new ExitSelectionAdapter(parent));
-
+		if (!isMac()) {
+			MenuItem exitItem = new MenuItem(verwaltungMenu,SWT.NONE);
+			exitItem.setText("Exit");
+			exitItem.addSelectionListener(new ExitSelectionAdapter(parent));
+		}
 		Menu adminMenu = new Menu(menuBar);
 		adminItem.setMenu(adminMenu);
 		MenuItem exportItem = new MenuItem(adminMenu,SWT.NONE);
@@ -151,46 +154,10 @@ public class Flohmarkt implements KeyListener {
 		importItem.setText("Daten importieren");
 		importItem.addSelectionListener(new ExportSelectionAdapter(shell, connection));
 		MenuItem dbresetItem = new MenuItem(adminMenu,SWT.NONE);
-		dbresetItem.setText("Datenbank zurücksetzen");
+		dbresetItem.setText("Datenbank zurÃ¼cksetzen");
 		dbresetItem.addSelectionListener(new DBResetSelectionAdapter(shell, connection));		
-		//shell.setMenuBar(menuBar);
 		return menuBar;
-
 	}
-
-	private Label createSummeGesamtInfoLabel(final Composite parent) {
-		final Composite composite = new Composite(parent, SWT.NONE);
-		final RowLayout compositeLayout = new RowLayout(SWT.HORIZONTAL);
-		composite.setLayout(compositeLayout);
-		final Label summe = new Label(composite, SWT.CENTER);
-		final RowData rowDataPreis = new RowData();
-		rowDataPreis.width = 80;
-		summe.setLayoutData(rowDataPreis);
-		summe.setText("Summe:");
-		final Label summecnt = new Label(composite, SWT.CENTER);
-		final RowData rowDataSummecnt = new RowData();
-		rowDataSummecnt.width = 80;
-		summecnt.setLayoutData(rowDataSummecnt);
-		summecnt.setText("0.00");
-		return summecnt;
-	}
-
-	private Label createKundeCountInfoLabel(final Composite parent) {
-		final Composite composite = new Composite(parent, SWT.NONE);
-		final RowLayout compositeLayout = new RowLayout(SWT.HORIZONTAL);
-		composite.setLayout(compositeLayout);
-		final Label kunde = new Label(composite, SWT.CENTER);
-		final RowData rowDataPreis = new RowData();
-		rowDataPreis.width = 80;
-		kunde.setLayoutData(rowDataPreis);
-		kunde.setText("Kunde:");
-		final Label kundecnt = new Label(composite, SWT.CENTER);
-		final RowData rowDataKundecnt = new RowData();
-		rowDataKundecnt.width = 80;
-		kundecnt.setLayoutData(rowDataKundecnt);
-		kundecnt.setText("0");
-		return kundecnt;
-	}    
 
 	private void createPlatz(final Composite parent) {
 		final Composite composite = new Composite(parent, SWT.NONE);
@@ -202,15 +169,6 @@ public class Flohmarkt implements KeyListener {
 		kunde.setLayoutData(rowData);
 		kunde.setText("");
 	}
-
-//	private void createButtons(final Composite parent) {
-//		final Composite composite = new Composite(parent, SWT.NONE);
-//		final RowLayout compositeLayout = new RowLayout(SWT.HORIZONTAL);
-//		composite.setLayout(compositeLayout);
-//		createButtonAuswertung(composite);
-//		createButtonExport(composite);
-//		createButtonImport(composite);
-//	}
 
 	private Composite createLabel(final Composite parent) {
 		final Composite composite = new Composite(parent, SWT.NONE);
@@ -247,7 +205,7 @@ public class Flohmarkt implements KeyListener {
 		rowDataPreis.width = 80;
 		preis.setLayoutData(rowDataPreis);
 		preis.addKeyListener(this);
-		preis.setToolTipText("Preis in Û");
+		preis.setToolTipText("Preis in â‚¬");
 		preis.addVerifyListener(new MoneyVerifyer());
 		nummer.setFocus();
 		return composite;
@@ -268,14 +226,14 @@ public class Flohmarkt implements KeyListener {
 		} else if ((int)e.character  == 13 && e.stateMask == SWT.CTRL) {
 			final BigDecimal summe = calculate(rows);
 			final MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO|SWT.CANCEL);
-			messageBox.setMessage("Summe: "+summe.toString()+"\nDaten übernehmen?");
+			messageBox.setMessage("Summe: "+summe.toString()+"\nDaten Ã¼bernehmen?");
 			int messageBoxAnswer = messageBox.open();
 			if (messageBoxAnswer == SWT.YES) {
-				new DataSaver(connection).saveValues(rows, kundeCountInfo.getText(), inst);
+				new DataSaver(connection).saveValues(rows, topComposite.kundeCountInfo.getText(), inst);
 				disposeRows();
 				content.pack(true);
-				summeGesamtInfo.setText(new SummeGesamtInfoProvider(connection).getSumme());
-				kundeCountInfo.setText(new KundeCountProvider(connection).getNextKundeCount());
+				topComposite.summeGesamtInfo.setText(new SummeGesamtInfoProvider(connection).getSumme());
+				topComposite.kundeCountInfo.setText(new KundeCountProvider(connection).getNextKundeCount());
 				//                System.out.println("muss neue Zeile machen");
 				rows.add(createRow(content));
 				content.pack(true);
@@ -285,7 +243,7 @@ public class Flohmarkt implements KeyListener {
 				confirmMessageBox.setMessage("Alle Daten verwerfen ?");
 				if (confirmMessageBox.open() == SWT.YES) {
 					disposeRows();
-					kundeCountInfo.setText(new KundeCountProvider(connection).getNextKundeCount());
+					topComposite.kundeCountInfo.setText(new KundeCountProvider(connection).getNextKundeCount());
 					rows.add(createRow(content));
 					content.pack(true);
 				}

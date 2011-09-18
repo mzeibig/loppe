@@ -1,54 +1,120 @@
 <project name="loppe" default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
-    <!-- some variables used -->
-    <property name="lib.dir" value="lib" />
-    <property name="build.dir" value="build" />
-    <property name="src.dir" value="src" />
-    
-    <!-- paths used for compilation and run  -->
-    <path id="lib.path.id">
-        <fileset dir="${lib.dir}" />
+	<!-- some variables used -->
+	<property name="lib.dir" value="lib" />
+	<property name="lib.swt.osx" value="lib/swt-3.7-cocoa-macosx-x86_64" />
+	<property name="lib.swt.linux" value="lib/swt-3.7-gtk-linux-x86" />
+	<property name="lib.swt.win32" value="lib/swt-3.7-win32-win32-x86"/>
+	<property name="build.dir" value="build" />
+	<property name="src.dir" value="src" />
+
+	<!-- paths used for compilation and run  -->
+	<path id="lib.path.id">
+		<fileset dir="${lib.dir}" />
 	</path>
-    <path id="run.path.id">
-        <path refid="lib.path.id" />
-        <path location="${build.dir}" />
+	<path id="lib.path.osx">
+        <fileset dir="${lib.dir}" />
+		<fileset dir="${lib.swt.osx}" />
+	</path>
+    <path id="lib.path.linux">
+        <fileset dir="${lib.dir}" />
+        <fileset dir="${lib.swt.linux}" />
     </path>
-    
-    <!-- ================================= 
+    <path id="lib.path.win32">
+        <fileset dir="${lib.dir}" />
+        <fileset dir="${lib.swt.win32}" />
+    </path>
+	<path id="run.path.id">
+		<path refid="lib.path.id" />
+		<path location="${build.dir}" />
+	</path>
+
+	<!-- ================================= 
+          target: init              
+         ================================= -->
+    <target name="init" description="init">
+        <mkdir dir="bin"/>
+    	<mkdir dir="dist"/>
+    </target>
+
+	<!-- ================================= 
           target: resolve              
          ================================= -->
-    <target name="resolve" description="--> retreive dependencies with ivy">
-        <ivy:retrieve/>
-    </target>    
-    
-    <!-- ================================= 
+	<target name="resolve" description="--> retreive dependencies with ivy">
+		<ivy:retrieve/>
+	</target>
+
+	<!-- ================================= 
           target: report              
          ================================= -->
-    <target name="report" depends="resolve" description="--> generates a report of dependencies">
-        <ivy:report todir="${build.dir}"/>
+	<target name="report" depends="resolve" description="--> generates a report of dependencies">
+		<ivy:report todir="${build.dir}"/>
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: checkOs                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="checkOs">
+        <condition property="isWindows" value="true">
+            <os family="windows" />
+        </condition>
+        <condition property="isLinux" value="true">
+            <os family="unix" />
+        </condition>
+        <condition property="isMac" value="true">
+            <os family="mac" />
+        </condition>            
     </target>
 
-    <!-- ================================= 
-          target: build
+	<!-- ================================= 
+          target: build              
          ================================= -->
-    <target name="build" depends="resolve" description="--> compile and run the project">
-        <mkdir dir="${build.dir}" />
-        <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="lib.path.id" />
-    </target>
-
-    <!-- ================================= 
-          target: clean              
-         ================================= -->
-    <target name="clean" description="--> clean the project">
-        <delete includeemptydirs="true">
-            <fileset dir="${basedir}">
-            	<exclude name="src/**" />
-            	<exclude name="build.xml" />
-              <exclude name="ivy.xml" />
-        	</fileset>
-    	</delete>
+    <target name="build" depends="clean, init, buildMac, buildLinux, buildWin32" description="uberbau">
     </target>
 	
-    <!-- ================================= 
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: buildMac
+         - - - - - - - - - - - - - - - - - -->
+	<target name="buildMac" depends="checkOs, resolve" if="isMac">
+		<mkdir dir="${build.dir}" />
+		<javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="lib.path.osx" />
+	</target>
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: buildLinux
+         - - - - - - - - - - - - - - - - - -->
+    <target name="buildLinux" depends="checkOs, resolve" if="isLinux">
+        <mkdir dir="${build.dir}" />
+        <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="lib.path.linux" />
+    </target>
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: buildWin32
+         - - - - - - - - - - - - - - - - - -->
+    <target name="buildWin32" depends="checkOs, resolve" if="isLinux">
+        <mkdir dir="${build.dir}" />
+        <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="lib.path.win32" />
+    </target>
+	
+	<!-- ================================= 
+          target: jar              
+         ================================= -->
+    <target name="jar" depends="build" description="builds the jar">
+    	<jar destfile="dist/loppe-osx.jar" basedir="${build.dir}" manifest="src/MANIFEST-OSX.MF" />
+    	<jar destfile="dist/loppe-win32.jar" basedir="${build.dir}" manifest="src/MANIFEST-WIN32.MF" />
+    	<jar destfile="dist/loppe-linux.jar" basedir="${build.dir}" manifest="src/MANIFEST-LINUX.MF" />
+    </target>
+
+
+	<!-- ================================= 
+          target: clean              
+         ================================= -->
+	<target name="clean" description="--> clean the project">
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${basedir}/build" />
+			<fileset dir="${basedir}/bin" />
+			<fileset dir="${basedir}/dist" />
+		</delete>
+	</target>
+
+	<!-- ================================= 
           target: clean-cache              
          ================================= -->
 	<target name="clean-cache" description="--> clean the ivy cache">
