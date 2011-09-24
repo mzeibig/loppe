@@ -84,10 +84,10 @@ public class DbTemplate {
 	}
 	
 	public boolean execute(final String sql) {
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		try {
 			stmt = connection.prepareStatement(sql);
-			return stmt.execute(sql);
+			return stmt.execute();
 		} catch (final SQLException e1) {
 			e1.printStackTrace();
 			return false;
