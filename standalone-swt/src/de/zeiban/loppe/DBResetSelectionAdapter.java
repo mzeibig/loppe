@@ -3,24 +3,15 @@
  */
 package de.zeiban.loppe;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
-import de.zeiban.loppe.dbcore.*;
+import de.zeiban.loppe.dbcore.DbTemplate;
 
 final class DBResetSelectionAdapter extends SelectionAdapter {
 	private final Shell shell;
@@ -39,7 +30,7 @@ final class DBResetSelectionAdapter extends SelectionAdapter {
 			final MessageBox confirmMessageBox = new MessageBox(shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO);
 			confirmMessageBox.setMessage("Wirklich alle Daten aus der Datenbank löschen ?");
 			if (confirmMessageBox.open() == SWT.YES) {
-				//dbTemplate.execute("delete from kauf");
+				dbTemplate.execute("delete from kauf");
 			}
 
 		}

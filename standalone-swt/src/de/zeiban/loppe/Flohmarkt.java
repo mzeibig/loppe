@@ -2,7 +2,6 @@ package de.zeiban.loppe;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.MathContext;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.text.NumberFormat;
@@ -26,6 +25,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.graphics.Image;
 
 import de.zeiban.loppe.properties.PropertyReader;
 
@@ -33,7 +33,7 @@ import de.zeiban.loppe.properties.PropertyReader;
 public class Flohmarkt implements KeyListener {
 
 	private final class CocoaQuitListener implements Listener {
-		public void handleEvent(Event event) {
+		public void handleEvent(final Event event) {
 			System.out.println("Quit");
 			shell.close();
 			try {connection.close();} catch (final Exception ignore){}
@@ -41,13 +41,13 @@ public class Flohmarkt implements KeyListener {
 	}
 
 	private final class CocoaSettingsListener implements Listener {
-		public void handleEvent(Event event) {
+		public void handleEvent(final Event event) {
 			System.out.println("Settings");
 		}
 	}
 
 	private final class CocoaAboutListener implements Listener {
-		public void handleEvent(Event event) {
+		public void handleEvent(final Event event) {
 			System.out.println("About");
 		}
 	}
@@ -63,7 +63,7 @@ public class Flohmarkt implements KeyListener {
 
 	public static void main(final String[] args) throws Exception {
 		Class.forName("org.hsqldb.jdbcDriver");
- 		Flohmarkt loppe = new Flohmarkt();
+ 		final Flohmarkt loppe = new Flohmarkt();
 		loppe.readProzent();
 		loppe.doit();
 	}
@@ -73,7 +73,7 @@ public class Flohmarkt implements KeyListener {
     }
 
 	private void readProzent() {
-        BigDecimal n = PropertyReader.getNumProperty("loppe.prozent", new BigDecimal(25));	
+        final BigDecimal n = PropertyReader.getNumProperty("loppe.prozent", new BigDecimal(25));	
         loppeShare = n.divide(new BigDecimal(100));
 	}
 
@@ -83,16 +83,18 @@ public class Flohmarkt implements KeyListener {
 		//        System.out.println(inst);
 		Display.setAppName("Flohmarkt");
 		final Display display = new Display();
+		final Image icon = new Image(display, Flohmarkt.class.getResourceAsStream("cart-icon.png"));
 		shell = new Shell(display);
 		shell.setText("Flohmarkt");
+		shell.setImage(icon);
 		//shell.setAlpha(200);
 		shell.setLayout(new FillLayout());
-		Menu menu = createMenu(shell);
+		final Menu menu = createMenu(shell);
 		shell.setMenuBar(menu);
 		final ScrolledComposite sc = new ScrolledComposite(shell, SWT.BORDER|SWT.V_SCROLL);
 		sc.setAlwaysShowScrollBars(true);
 		sc.setBackgroundMode(SWT.INHERIT_DEFAULT);
-		ResizeListener resizeListener = new ResizeListener(display, sc);
+		final ResizeListener resizeListener = new ResizeListener(display, sc);
 		sc.addListener(SWT.Resize, resizeListener);
 		content = new Composite(sc, SWT.NONE);
 		content.addKeyListener(this);
@@ -101,7 +103,7 @@ public class Flohmarkt implements KeyListener {
 		//createButtons(content);
 		
 		if ( isMac() ) {
-	        CocoaUIEnhancer enhancer = new CocoaUIEnhancer("Flohmarkt");
+	        final CocoaUIEnhancer enhancer = new CocoaUIEnhancer("Flohmarkt");
 	        enhancer.hookApplicationMenu(display, 
 	        		new CocoaQuitListener(), 
 	        		new CocoaAboutListener(), 
@@ -125,46 +127,47 @@ public class Flohmarkt implements KeyListener {
 			}
 		}
 		try {connection.close();} catch (final Exception ignore){}
+		icon.dispose();
 		resizeListener.dispose();
 		display.dispose();
 	}
 
 	private Menu createMenu(final Shell parent) {
-		Menu menuBar = new Menu (parent, SWT.BAR);
-		MenuItem verwaltungItem = new MenuItem(menuBar,SWT.CASCADE);
+		final Menu menuBar = new Menu (parent, SWT.BAR);
+		final MenuItem verwaltungItem = new MenuItem(menuBar,SWT.CASCADE);
 		verwaltungItem.setText("Verwaltung");
-		MenuItem adminItem = new MenuItem(menuBar,SWT.CASCADE);
+		final MenuItem adminItem = new MenuItem(menuBar,SWT.CASCADE);
 		adminItem.setText("Admin");
 		
-		MenuItem hilfeItem = new MenuItem(menuBar,SWT.CASCADE);
+		final MenuItem hilfeItem = new MenuItem(menuBar,SWT.CASCADE);
 		hilfeItem.setText("Hilfe");
 
-		Menu verwaltungMenu = new Menu(menuBar);
+		final Menu verwaltungMenu = new Menu(menuBar);
 		verwaltungItem.setMenu(verwaltungMenu);
-		MenuItem auswertungItem = new MenuItem(verwaltungMenu,SWT.NONE);
+		final MenuItem auswertungItem = new MenuItem(verwaltungMenu,SWT.NONE);
 		auswertungItem.setText("Auswertung");
 		auswertungItem.addSelectionListener(new AuswertungSelectionAdapter(parent, connection, loppeShare));
 //		MenuItem blackListItem = new MenuItem(verwaltungMenu,SWT.NONE);
 //		blackListItem.setText("Black-List pflegen");
 //		MenuItem whiteListItem = new MenuItem(verwaltungMenu,SWT.NONE);
 //		whiteListItem.setText("White-List pflegen");
-		MenuItem infoItem = new MenuItem(verwaltungMenu,SWT.NONE);
+		final MenuItem infoItem = new MenuItem(verwaltungMenu,SWT.NONE);
 		infoItem.setText("Info");	
 		infoItem.addSelectionListener(new InfoSelectionAdapter(parent, loppeShare));
 		if (!isMac()) {
-			MenuItem exitItem = new MenuItem(verwaltungMenu,SWT.NONE);
+			final MenuItem exitItem = new MenuItem(verwaltungMenu,SWT.NONE);
 			exitItem.setText("Exit");
 			exitItem.addSelectionListener(new ExitSelectionAdapter(parent, connection));
 		}
-		Menu adminMenu = new Menu(menuBar);
+		final Menu adminMenu = new Menu(menuBar);
 		adminItem.setMenu(adminMenu);
-		MenuItem exportItem = new MenuItem(adminMenu,SWT.NONE);
+		final MenuItem exportItem = new MenuItem(adminMenu,SWT.NONE);
 		exportItem.setText("Daten exportieren");
 		exportItem.addSelectionListener(new ExportSelectionAdapter(shell, connection));
-		MenuItem importItem = new MenuItem(adminMenu,SWT.NONE);
+		final MenuItem importItem = new MenuItem(adminMenu,SWT.NONE);
 		importItem.setText("Daten importieren");
 		importItem.addSelectionListener(new ExportSelectionAdapter(shell, connection));
-		MenuItem dbresetItem = new MenuItem(adminMenu,SWT.NONE);
+		final MenuItem dbresetItem = new MenuItem(adminMenu,SWT.NONE);
 		dbresetItem.setText("Datenbank zurücksetzen");
 		dbresetItem.addSelectionListener(new DBResetSelectionAdapter(shell, connection));		
 		return menuBar;
@@ -229,11 +232,6 @@ public class Flohmarkt implements KeyListener {
 	//    @Override
 	public void keyReleased(final KeyEvent e) {
 		if ((int)e.character  == 13 && e.stateMask == 0) {
-			//System.out.println("neue Zeile!");
-			BigDecimal zwSumme = new BigDecimal(0.0);
-			for (Composite row: rows) {
-				zwSumme = zwSumme.add(new BigDecimal(((Text) row.getChildren()[1]).getText()));
-			}
 			topComposite.zwischensumme.setText(NumberFormat.getCurrencyInstance().format(calculate(rows)));
 			rows.add(createRow(content));
 			content.pack(true);
@@ -242,15 +240,14 @@ public class Flohmarkt implements KeyListener {
 		} else if ((int)e.character  == 13 && e.stateMask == SWT.CTRL) {
 			final BigDecimal summe = calculate(rows);
 			final MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO|SWT.CANCEL);
-			messageBox.setMessage("Summe: "+summe.toString()+"\nDaten übernehmen?");
-			int messageBoxAnswer = messageBox.open();
+			messageBox.setMessage("Summe: "+NumberFormat.getCurrencyInstance().format(summe)+"\nDaten übernehmen?");
+			final int messageBoxAnswer = messageBox.open();
 			if (messageBoxAnswer == SWT.YES) {
 				new DataSaver(connection).saveValues(rows, topComposite.kundeCountInfo.getText(), inst);
 				disposeRows();
 				content.pack(true);
 				topComposite.summeGesamtInfo.setText(new SummeGesamtInfoProvider(connection).getSumme());
 				topComposite.kundeCountInfo.setText(new KundeCountProvider(connection).getNextKundeCount());
-				//                System.out.println("muss neue Zeile machen");
 				rows.add(createRow(content));
 				content.pack(true);
 				topComposite.letzterKunde.setText(NumberFormat.getCurrencyInstance().format(summe));
@@ -269,7 +266,7 @@ public class Flohmarkt implements KeyListener {
 		}
 	}
 
-	private static BigDecimal calculate(List<Composite> rows) {
+	private static BigDecimal calculate(final List<Composite> rows) {
 		BigDecimal ergebnis = BigDecimal.ZERO;
 		for (final Composite row : rows) {
 			final String preisText = ((Text)row.getChildren()[1]).getText();
