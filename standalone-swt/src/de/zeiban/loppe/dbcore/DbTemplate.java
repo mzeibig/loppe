@@ -7,10 +7,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+
+import org.apache.log4j.Logger;
 
 public class DbTemplate {
-	final Connection connection;
+	
+	private final static Logger LOGGER = Logger.getLogger(DbTemplate.class);
+	private final Connection connection;
 	
 	public DbTemplate(final Connection connection) {
 		this.connection = connection;
@@ -31,7 +34,7 @@ public class DbTemplate {
 			rs = stmt.executeQuery();
 			resultCallback.doWithResultset(rs);
 		} catch (final SQLException e1) {
-			e1.printStackTrace();
+			LOGGER.error("Fehler beim Datenbankzugriff:" + e1.getMessage(), e1);;
 		} finally {
 			try {rs.close();} catch (final Exception ignore) {}
 			try {stmt.close();} catch (final Exception ignore) {}
@@ -53,7 +56,7 @@ public class DbTemplate {
 			rs = stmt.executeQuery();
 			return resultCallback.doWithResultset(rs);
 		} catch (final SQLException e1) {
-			e1.printStackTrace();
+			LOGGER.error("Fehler beim Datenbankzugriff:" + e1.getMessage(), e1);;
 			return null;
 		} finally {
 			try {rs.close();} catch (final Exception ignore) {}
@@ -75,7 +78,7 @@ public class DbTemplate {
 			}
 			return false;
 		} catch (final SQLException e1) {
-			e1.printStackTrace();
+			LOGGER.error("Fehler beim Datenbankzugriff:" + e1.getMessage(), e1);;
 			return false;
 		} finally {
 			try {rs.close();} catch (final Exception ignore) {}

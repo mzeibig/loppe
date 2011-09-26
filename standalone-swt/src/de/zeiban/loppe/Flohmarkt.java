@@ -34,7 +34,6 @@ public class Flohmarkt implements KeyListener {
 
 	private final class CocoaQuitListener implements Listener {
 		public void handleEvent(final Event event) {
-			System.out.println("Quit");
 			shell.close();
 			try {connection.close();} catch (final Exception ignore){}
 		}
@@ -42,13 +41,11 @@ public class Flohmarkt implements KeyListener {
 
 	private final class CocoaSettingsListener implements Listener {
 		public void handleEvent(final Event event) {
-			System.out.println("Settings");
 		}
 	}
 
 	private final class CocoaAboutListener implements Listener {
 		public void handleEvent(final Event event) {
-			System.out.println("About");
 		}
 	}
 
@@ -80,7 +77,6 @@ public class Flohmarkt implements KeyListener {
 	private void doit() throws Exception {
 		connection = DriverManager.getConnection("jdbc:hsqldb:file:testdb2;shutdown=true", "sa", "");
 		inst = System.getProperty("user.name").hashCode();
-		//        System.out.println(inst);
 		Display.setAppName("Flohmarkt");
 		final Display display = new Display();
 		final Image icon = new Image(display, Flohmarkt.class.getResourceAsStream("cart-icon.png"));
@@ -89,8 +85,6 @@ public class Flohmarkt implements KeyListener {
 		shell.setImage(icon);
 		//shell.setAlpha(200);
 		shell.setLayout(new FillLayout());
-		final Menu menu = createMenu(shell);
-		shell.setMenuBar(menu);
 		final ScrolledComposite sc = new ScrolledComposite(shell, SWT.BORDER|SWT.V_SCROLL);
 		sc.setAlwaysShowScrollBars(true);
 		sc.setBackgroundMode(SWT.INHERIT_DEFAULT);
@@ -117,6 +111,9 @@ public class Flohmarkt implements KeyListener {
 		rows.add(createRow(content));
 		content.setSize(800, 600);
 		sc.setContent(content);
+
+		final Menu menu = createMenu(shell);
+		shell.setMenuBar(menu);
 
 		shell.pack();
 		shell.setSize(800, 600);
@@ -166,7 +163,7 @@ public class Flohmarkt implements KeyListener {
 		exportItem.addSelectionListener(new ExportSelectionAdapter(shell, connection));
 		final MenuItem importItem = new MenuItem(adminMenu,SWT.NONE);
 		importItem.setText("Daten importieren");
-		importItem.addSelectionListener(new ExportSelectionAdapter(shell, connection));
+		importItem.addSelectionListener(new ImportSelectionAdapter(shell, connection, topComposite.summeGesamtInfo, new SummeGesamtInfoProvider(connection)));
 		final MenuItem dbresetItem = new MenuItem(adminMenu,SWT.NONE);
 		dbresetItem.setText("Datenbank zurücksetzen");
 		dbresetItem.addSelectionListener(new DBResetSelectionAdapter(shell, connection));		
@@ -187,36 +184,37 @@ public class Flohmarkt implements KeyListener {
 	private Composite createLabel(final Composite parent) {
 		final Composite composite = new Composite(parent, SWT.NONE);
 		final RowLayout compositeLayout = new RowLayout(SWT.HORIZONTAL);
+		compositeLayout.spacing = 15;
 		composite.setLayout(compositeLayout);
 		final Label nummer = new Label(composite, SWT.CENTER);
 		final RowData rowData = new RowData();
-		rowData.width = 100;
+		rowData.width = 200;
 		nummer.setLayoutData(rowData);
 		nummer.setText("Nummer");
 		//nummer.addModifyListener(this);
 		final Label preis = new Label(composite, SWT.CENTER);
 		final RowData rowDataPreis = new RowData();
-		rowDataPreis.width = 80;
+		rowDataPreis.width = 180;
 		preis.setLayoutData(rowDataPreis);
-		preis.setText("Preis");
+		preis.setText("Preis in €");
 		return composite;
 	}
 
 	private Composite createRow(final Composite parent) {
-		//        System.out.println("createRow");
 		final Composite composite = new Composite(parent, SWT.NONE);
 		final RowLayout compositeLayout = new RowLayout(SWT.HORIZONTAL);
+		compositeLayout.spacing = 15;
 		composite.setLayout(compositeLayout);
 		final Text nummer = new Text(composite, SWT.BORDER);
 		final RowData rowData = new RowData();
-		rowData.width = 100;
+		rowData.width = 200;
 		nummer.setLayoutData(rowData);
 		nummer.setToolTipText("Nummer");
 		nummer.addVerifyListener(new NumberVerifyer());
 		nummer.addFocusListener(new BlackListCheckFocusAdapter(this.shell, this.connection));
 		final Text preis = new Text(composite, SWT.BORDER);
 		final RowData rowDataPreis = new RowData();
-		rowDataPreis.width = 80;
+		rowDataPreis.width = 180;
 		preis.setLayoutData(rowDataPreis);
 		preis.addKeyListener(this);
 		preis.setToolTipText("Preis in €");
