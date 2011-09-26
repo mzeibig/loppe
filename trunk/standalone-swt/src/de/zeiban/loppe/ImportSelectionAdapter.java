@@ -33,17 +33,20 @@ final class ImportSelectionAdapter extends SelectionAdapter {
 		this.summeGesamt = summeGesamt;
 		this.summenprovider = summenprovider;
 	}
+	
 	@Override
 	public void widgetSelected(final SelectionEvent e) {
 		//                System.out.println("BUTTON-Import");
 		final FileDialog dlg = new FileDialog(this.shell, SWT.OPEN);
 		dlg.setFilterExtensions(new String[]{"*.csv"});
+		dlg.setFilterNames(new String[]{"Comma Separated Values"});
 		final String fileName = dlg.open();
 		if (fileName != null) {
 			final MessageBox messageBox = new MessageBox(this.shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO);
 			messageBox.setMessage("Daten jetzt importieren ?");
 			if (messageBox.open() == SWT.YES) {   
 				final File file = new File(fileName);
+				//TODO: DbTemplate beutzen
 				PreparedStatement stmt = null;
 				BufferedReader reader = null;
 				try {
@@ -53,7 +56,7 @@ final class ImportSelectionAdapter extends SelectionAdapter {
 					String zeile = reader.readLine(); 
 					while (zeile != null) {
 						final String[] splitted = zeile.split(";");
-						System.out.println(splitted);
+						//System.out.println(splitted);
 						stmt.setInt(1,Integer.valueOf(splitted[0]));
 						stmt.setInt(2, Integer.valueOf(splitted[1]));
 						stmt.setInt(3, Integer.valueOf(splitted[2]));

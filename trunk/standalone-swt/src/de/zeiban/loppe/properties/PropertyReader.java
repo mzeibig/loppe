@@ -7,33 +7,40 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 public class PropertyReader {
 	
-	static Properties properties;
+	private static final Logger LOGGER = Logger.getLogger(PropertyReader.class);
+	private static Properties properties;
 	
-	public static BigDecimal getNumProperty(String name, BigDecimal defaultt) {
+	public static synchronized BigDecimal getNumProperty(final String name, final BigDecimal defaultt) {
 		if (properties == null) { 
 			readProperties();
 		}
-		String propString = properties.getProperty(name);
+		final String propString = properties.getProperty(name);
 		try {
-			BigDecimal num = new BigDecimal(propString);
+			final BigDecimal num = new BigDecimal(propString);
 			return num;
-		} catch (NumberFormatException nfe) {
+		} catch (final NumberFormatException nfe) {
 			return defaultt;
 		}
 	}
 	
 	private static void readProperties() {
 		properties = new Properties();
+		BufferedInputStream stream = null;
 		try {
-			BufferedInputStream stream = new BufferedInputStream(new FileInputStream("loppe.properties"));
+			stream = new BufferedInputStream(new FileInputStream("loppe.properties"));
 			properties.load(stream);
-			stream.close();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (final FileNotFoundException e1) {
+			LOGGER.warn("loppe.properties nicht gefunde! Verwende Standardwerte.");
+			properties.put("loppe.prozent", "30");
+		} catch (final IOException e) {
+			LOGGER.error("Fehler beim Zugriff auf loppe.properties:" + e.getMessage(), e);
+			properties = null;
+		} finally {
+			try {stream.close();} catch (final Exception IGNORE) {}
 		}
 	}
 

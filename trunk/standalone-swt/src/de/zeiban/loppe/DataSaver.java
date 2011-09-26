@@ -17,6 +17,7 @@ class DataSaver {
 	}
 
 	void saveValues(List<Composite> rows, String kundeCount, int inst) {
+		//TODO: use DbTemplate
 		PreparedStatement stmt = null;
 		try {
 			stmt = connection.prepareStatement("insert into kauf values(?, ?, ?, ?)");

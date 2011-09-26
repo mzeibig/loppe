@@ -33,8 +33,9 @@ final class ExportSelectionAdapter extends SelectionAdapter {
 
 	@Override
 	public void widgetSelected(final SelectionEvent e) {
-		final FileDialog dlg = new FileDialog(shell, SWT.OPEN);
+		final FileDialog dlg = new FileDialog(shell, SWT.SAVE);
 		dlg.setFilterExtensions(new String[]{"*.csv"});
+		dlg.setFilterNames(new String[]{"Comma Separated Values"});
 		final String fileName = dlg.open();
 		if (fileName != null) {
 			final MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO);
@@ -44,27 +45,25 @@ final class ExportSelectionAdapter extends SelectionAdapter {
 				try {
 					final PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 					dbTemplate.select("select inst, kunde, nummer, preis from kauf", 
-							new ResultCallback() {
-
-								public void doWithResultset(final ResultSet rs) throws SQLException {
-									while (rs.next()) {
-										final int inst = rs.getInt("inst");
-										final int kunde = rs.getInt("kunde");
-										final int nummer = rs.getInt("nummer");
-										final BigDecimal preis = rs.getBigDecimal("preis");
-										final StringBuffer sb = new StringBuffer();
-										sb.append(inst)
-										.append(";")
-										.append(kunde)
-										.append(";")
-										.append(nummer)
-										.append(";")
-										.append(preis);
-										writer.println(sb.toString());
-									}
-									writer.close();
+						new ResultCallback() {
+							public void doWithResultset(final ResultSet rs) throws SQLException {
+								while (rs.next()) {
+									final int inst = rs.getInt("inst");
+									final int kunde = rs.getInt("kunde");
+									final int nummer = rs.getInt("nummer");
+									final BigDecimal preis = rs.getBigDecimal("preis");
+									final StringBuffer sb = new StringBuffer();
+									sb.append(inst)
+									.append(";")
+									.append(kunde)
+									.append(";")
+									.append(nummer)
+									.append(";")
+									.append(preis);
+									writer.println(sb.toString());
 								}
-						
+								writer.close();
+							}						
 					});
 					try {writer.close();} catch (final Exception ignore) {}
 				} catch (final IOException e1) {
