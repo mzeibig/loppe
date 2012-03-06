@@ -3,8 +3,8 @@ package de.zeiban.loppe.dbcore;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public interface ResultCallbackWithReturn {
+public interface ResultCallbackWithReturn<T> {
 
-	Object doWithResultset(ResultSet rs) throws SQLException;
+	T doWithResultset(ResultSet rs) throws SQLException;
 
 }

@@ -1,7 +1,5 @@
 <project name="loppe" default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
 	<!-- some variables used -->
-	<property name="dist.version" value="1.2"/>
-	
 	<property name="hsql.version" value="1.8.0.7"/>
     <property name="log4j.version" value="1.2.14"/>
 	<property name="swt.version" value="3.7"/>
@@ -118,19 +116,19 @@
           target: distribution              
          ================================= -->
     <target name="distribution" depends="jar" description="description">
-        <zip destfile="dist/loppe-osx-${dist.version}.zip">
+        <zip destfile="dist/loppe-osx-${ivy.revision}.zip">
         	<fileset dir="dist" includes="loppe-osx.jar"/>
             <fileset dir="lib" includes="hsqldb-${hsql.version}.jar"/>
             <fileset dir="lib" includes="log4j-${log4j.version}.jar"/>
             <fileset dir="lib/swt-${swt.version}-cocoa-macosx-x86_64" includes="swt.jar"/>
         </zip>
-        <zip destfile="dist/loppe-win32-${dist.version}.zip">
+        <zip destfile="dist/loppe-win32-${ivy.revision}.zip">
             <fileset dir="dist" includes="loppe-win32.jar"/>
             <fileset dir="lib" includes="hsqldb-${hsql.version}.jar"/>
             <fileset dir="lib" includes="log4j-${log4j.version}.jar"/>
             <fileset dir="lib/swt-${swt.version}-win32-win32-x86" includes="swt.jar"/>
         </zip>
-        <zip destfile="dist/loppe-linux-${dist.version}.zip">
+        <zip destfile="dist/loppe-linux-${ivy.revision}.zip">
             <fileset dir="dist" includes="loppe-linux.jar"/>
             <fileset dir="lib" includes="hsqldb-${hsql.version}.jar"/>
             <fileset dir="lib" includes="log4j-${log4j.version}.jar"/>
