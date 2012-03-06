@@ -41,11 +41,11 @@ public class DbTemplate {
 		}
 	}
 	
-	public Object selectObject(final String sql, final ResultCallbackWithReturn resultCallback) {
+	public <T> Object selectObject(final String sql, final ResultCallbackWithReturn<T> resultCallback) {
 		return selectObject(sql, null, resultCallback);
 	}
 	
-	public Object selectObject(final String sql, final ParamProvider paramProvider, final ResultCallbackWithReturn resultCallback) {
+	public <T> T selectObject(final String sql, final ParamProvider paramProvider, final ResultCallbackWithReturn<T> resultCallback) {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
@@ -86,6 +86,22 @@ public class DbTemplate {
 		}
 	}
 	
+	public Integer selectInteger(final String sql) {
+		return selectInteger(sql, null);
+	}
+	
+	public Integer selectInteger(final String sql, final ParamProvider paramProvider) {
+		return selectObject(sql, paramProvider, new ResultCallbackWithReturn<Integer>() {
+			public Integer doWithResultset(ResultSet rs) throws SQLException {
+				if (rs.next()) {
+					return Integer.valueOf(rs.getInt(1));
+				} else {
+					return null;
+				}
+			}
+		});
+	}
+
 	public boolean execute(final String sql) {
 		PreparedStatement stmt = null;
 		try {

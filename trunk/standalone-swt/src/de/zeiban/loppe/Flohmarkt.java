@@ -27,10 +27,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.graphics.Image;
 
+import de.zeiban.loppe.dbcore.DbTemplate;
 import de.zeiban.loppe.properties.PropertyReader;
 
 
 public class Flohmarkt implements KeyListener {
+
+	private static final String DBNAME = "loppedb";
+	private static final String URL = "jdbc:hsqldb:file:" + DBNAME + ";shutdown=true";
 
 	private final class CocoaQuitListener implements Listener {
 		public void handleEvent(final Event event) {
@@ -75,7 +79,8 @@ public class Flohmarkt implements KeyListener {
 	}
 
 	private void doit() throws Exception {
-		connection = DriverManager.getConnection("jdbc:hsqldb:file:testdb2;shutdown=true", "sa", "");
+		connection = DriverManager.getConnection(URL, "sa", "");
+		initDb(connection);
 		inst = System.getProperty("user.name").hashCode();
 		Display.setAppName("Flohmarkt");
 		final Display display = new Display();
@@ -127,6 +132,18 @@ public class Flohmarkt implements KeyListener {
 		icon.dispose();
 		resizeListener.dispose();
 		display.dispose();
+	}
+
+	private void initDb(Connection connection) {
+		DbTemplate db = new DbTemplate(connection);
+		Integer tabzahl = 
+				db.selectInteger(
+						"SELECT count(*) " +
+						"FROM information_schema.system_tables " +
+						"WHERE table_schem = 'PUBLIC' AND table_name = 'KAUF'");
+		if (tabzahl==0) {
+			db.execute("CREATE TABLE KAUF(INST INTEGER,KUNDE INTEGER,NUMMER INTEGER,PREIS DECIMAL)");
+		}
 	}
 
 	private Menu createMenu(final Shell parent) {
