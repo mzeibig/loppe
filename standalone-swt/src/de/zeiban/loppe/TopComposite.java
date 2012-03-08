@@ -8,6 +8,11 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+/**
+ * Dieses TopComposite ist sowas wie die Statuszeile am oberen Ende.
+ * 
+ * @author mirkoz
+ */
 public class TopComposite extends Composite {
 
 	protected Label summeGesamtInfo;
