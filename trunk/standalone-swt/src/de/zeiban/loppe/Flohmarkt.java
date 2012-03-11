@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
+import de.zeiban.loppe.data.SummeGesamtInfoProvider;
 import de.zeiban.loppe.dbcore.DbTemplate;
 import de.zeiban.loppe.properties.PropertyReader;
 
@@ -90,8 +91,8 @@ public class Flohmarkt {
 	    }
 		sc.setContent(content);
 
-		final Menu menu = createMenu(shell);
-		shell.setMenuBar(menu);
+		final Menu menuBar = createMenu(shell);
+		shell.setMenuBar(menuBar);
 
 		shell.pack();
 		shell.setSize(800, 600);
@@ -153,7 +154,7 @@ public class Flohmarkt {
 		exportItem.addSelectionListener(new ExportSelectionAdapter(shell, connection));
 		final MenuItem importItem = new MenuItem(adminMenu,SWT.NONE);
 		importItem.setText("Daten importieren");
-		importItem.addSelectionListener(new ImportSelectionAdapter(shell, connection, content.topComposite.summeGesamtInfo, new SummeGesamtInfoProvider(connection)));
+		importItem.addSelectionListener(new ImportSelectionAdapter(shell, connection, content.topComposite.getSummeLabel(), new SummeGesamtInfoProvider(connection)));
 		final MenuItem dbresetItem = new MenuItem(adminMenu,SWT.NONE);
 		dbresetItem.setText("Datenbank zurücksetzen");
 		dbresetItem.addSelectionListener(new DBResetSelectionAdapter(shell, connection));		
