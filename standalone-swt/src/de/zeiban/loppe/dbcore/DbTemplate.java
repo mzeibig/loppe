@@ -41,8 +41,24 @@ public class DbTemplate {
 		}
 	}
 	
-	public <T> Object selectObject(final String sql, final ResultCallbackWithReturn<T> resultCallback) {
+	public <T> T selectObject(final String sql, final ResultCallbackWithReturn<T> resultCallback) {
 		return selectObject(sql, null, resultCallback);
+	}
+	
+	public <T> T selectObject(final String sql) {
+		return selectObject(sql, (ParamProvider) null);
+	}
+	
+	public <T> T selectObject(final String sql, final ParamProvider paramProvider) {
+		return selectObject(sql, paramProvider, new ResultCallbackWithReturn<T>() {
+			public T doWithResultset(ResultSet rs) throws SQLException {
+				if (rs.next()) {
+					return (T) rs.getObject(1);
+				} else {
+					return null;
+				}
+			}
+		});
 	}
 	
 	public <T> T selectObject(final String sql, final ParamProvider paramProvider, final ResultCallbackWithReturn<T> resultCallback) {
@@ -103,9 +119,16 @@ public class DbTemplate {
 	}
 
 	public boolean execute(final String sql) {
+		return execute(sql, null);
+	}
+	
+	public boolean execute(final String sql, final ParamProvider paramProvider) {
 		PreparedStatement stmt = null;
 		try {
 			stmt = connection.prepareStatement(sql);
+			if (paramProvider != null) {
+				paramProvider.fillParams(stmt);
+			}
 			return stmt.execute();
 		} catch (final SQLException e1) {
 			e1.printStackTrace();

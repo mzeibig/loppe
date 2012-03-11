@@ -1,7 +1,6 @@
 package de.zeiban.loppe;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -17,10 +16,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
+
+import de.zeiban.loppe.data.DataSaver;
+import de.zeiban.loppe.data.KundeCountProvider;
+import de.zeiban.loppe.data.Row;
+import de.zeiban.loppe.data.SummeGesamtInfoProvider;
 
 public class HeaderSpaceAndTableComposite extends Composite implements KeyListener {
-	private final List<Composite> rows = new ArrayList<Composite>();
+	private final List<Row> rows = new ArrayList<Row>();
 	protected TopComposite topComposite;
 	private Connection connection;
 	private int inst = System.getProperty("user.name").hashCode();
@@ -31,68 +34,40 @@ public class HeaderSpaceAndTableComposite extends Composite implements KeyListen
 		this.connection = connection;
 		this.shell = shell;
 		addKeyListener(this);
-		final RowLayout layout = new RowLayout(SWT.VERTICAL);
-		this.setLayout(layout);
+		this.setLayout(new RowLayout(SWT.VERTICAL));
 		this.topComposite = new TopComposite(this, connection);
-		createPlatz(this);
-		createLabel(this);
-		rows.add(createRow(this));
+		new SpaceComposite(this);
+		new TableHeaderComposite(this);
+		rows.add(new RowComposite(this.shell, this, this));
 		this.setSize(800, 600);
 	}
 	
-	private void createPlatz(final Composite parent) {
-		final Composite composite = new Composite(parent, SWT.NONE);
-		final RowLayout compositeLayout = new RowLayout(SWT.HORIZONTAL);
-		composite.setLayout(compositeLayout);
-		final Label kunde = new Label(composite, SWT.CENTER);
-		final RowData rowData = new RowData();
-		rowData.width = 100;
-		kunde.setLayoutData(rowData);
-		kunde.setText("");
-	}
-
-	private Composite createLabel(final Composite parent) {
-		final Composite composite = new Composite(parent, SWT.NONE);
-		final RowLayout compositeLayout = new RowLayout(SWT.HORIZONTAL);
-		compositeLayout.spacing = 15;
-		composite.setLayout(compositeLayout);
-		final Label nummer = new Label(composite, SWT.CENTER);
-		final RowData rowData = new RowData();
-		rowData.width = 200;
-		nummer.setLayoutData(rowData);
-		nummer.setText("Nummer");
-		//nummer.addModifyListener(this);
-		final Label preis = new Label(composite, SWT.CENTER);
-		final RowData rowDataPreis = new RowData();
-		rowDataPreis.width = 180;
-		preis.setLayoutData(rowDataPreis);
-		preis.setText("Preis in €");
-		return composite;
+	private static class SpaceComposite extends Composite {
+		SpaceComposite(final Composite parent) {
+			super(parent, SWT.NONE);
+			this.setLayout(new RowLayout(SWT.HORIZONTAL));
+			final Label label = new Label(this, SWT.CENTER);
+			label.setLayoutData(new RowData(100, SWT.DEFAULT));
+			label.setText("");
+		}
 	}
 	
-	private Composite createRow(final Composite parent) {
-		final Composite composite = new Composite(parent, SWT.NONE);
-		final RowLayout compositeLayout = new RowLayout(SWT.HORIZONTAL);
-		compositeLayout.spacing = 15;
-		composite.setLayout(compositeLayout);
-		final Text nummer = new Text(composite, SWT.BORDER);
-		final RowData rowData = new RowData();
-		rowData.width = 200;
-		nummer.setLayoutData(rowData);
-		nummer.setToolTipText("Nummer");
-		nummer.addVerifyListener(new NumberVerifyer());
-		nummer.addFocusListener(new BlackListCheckFocusAdapter(this.shell, this.connection));
-		final Text preis = new Text(composite, SWT.BORDER);
-		final RowData rowDataPreis = new RowData();
-		rowDataPreis.width = 180;
-		preis.setLayoutData(rowDataPreis);
-		preis.addKeyListener(this);
-		preis.setToolTipText("Preis in €");
-		preis.addVerifyListener(new MoneyVerifyer());
-		nummer.setFocus();
-		return composite;
+	private static class TableHeaderComposite extends Composite {
+		public TableHeaderComposite(final Composite parent) {
+			super(parent, SWT.NONE);
+			final RowLayout compositeLayout = new RowLayout(SWT.HORIZONTAL);
+			compositeLayout.spacing = 15;
+			this.setLayout(compositeLayout);
+			final Label nummer = new Label(this, SWT.CENTER);
+			nummer.setLayoutData(new RowData(200, SWT.DEFAULT));
+			nummer.setText("Nummer");
+			//nummer.addModifyListener(this);
+			final Label preis = new Label(this, SWT.CENTER);
+			preis.setLayoutData(new RowData(180, SWT.DEFAULT));
+			preis.setText("Preis in €");
+		}
 	}
-	
+		
 	//    @Override
 	public void keyPressed(final KeyEvent e) {
 	}
@@ -100,8 +75,8 @@ public class HeaderSpaceAndTableComposite extends Composite implements KeyListen
 	//    @Override
 	public void keyReleased(final KeyEvent e) {
 		if ((int)e.character  == 13 && e.stateMask == 0) {
-			topComposite.zwischensumme.setText(NumberFormat.getCurrencyInstance().format(calculate(rows)));
-			rows.add(createRow(this));
+			topComposite.setZwischensumme(calculate(rows));
+			rows.add(new RowComposite(this.shell, this, this));
 			this.pack(true);
 			final ScrolledComposite sc = ((ScrolledComposite)this.getParent());
 			sc.setOrigin(0, Integer.MAX_VALUE);
@@ -111,43 +86,42 @@ public class HeaderSpaceAndTableComposite extends Composite implements KeyListen
 			messageBox.setMessage("Summe: "+NumberFormat.getCurrencyInstance().format(summe)+"\nDaten übernehmen?");
 			final int messageBoxAnswer = messageBox.open();
 			if (messageBoxAnswer == SWT.YES) {
-				new DataSaver(connection).saveValues(rows, topComposite.kundeCountInfo.getText(), inst);
+				new DataSaver(connection).saveValues(rows, topComposite.getKundeCountAsString(), inst);
 				disposeRows();
 				this.pack(true);
-				topComposite.summeGesamtInfo.setText(new SummeGesamtInfoProvider(connection).getSumme());
-				topComposite.kundeCountInfo.setText(new KundeCountProvider(connection).getNextKundeCount());
-				rows.add(createRow(this));
+				topComposite.setSummeGesamt(new SummeGesamtInfoProvider(connection).getSumme());
+				topComposite.setKundeCount(new KundeCountProvider(connection).getNextKundeCount());
+				topComposite.setLetzterKunde(summe);
+				topComposite.setZwischensumme(BigDecimal.ZERO);
+				rows.add(new RowComposite(this.shell, this, this));
 				this.pack(true);
-				topComposite.letzterKunde.setText(NumberFormat.getCurrencyInstance().format(summe));
-				topComposite.zwischensumme.setText(NumberFormat.getCurrencyInstance().format(BigInteger.ZERO));
 			}
 			if (messageBoxAnswer == SWT.CANCEL) {
 				final MessageBox confirmMessageBox = new MessageBox(shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO);
 				confirmMessageBox.setMessage("Alle Daten verwerfen ?");
 				if (confirmMessageBox.open() == SWT.YES) {
 					disposeRows();
-					topComposite.kundeCountInfo.setText(new KundeCountProvider(connection).getNextKundeCount());
-					rows.add(createRow(this));
+					topComposite.setKundeCount(new KundeCountProvider(connection).getNextKundeCount());
+					rows.add(new RowComposite(this.shell, this, this));
 					this.pack(true);
 				}
 			}
 		}
 	}
 
-	private static BigDecimal calculate(final List<Composite> rows) {
+	private static BigDecimal calculate(final List<Row> rows) {
 		BigDecimal ergebnis = BigDecimal.ZERO;
-		for (final Composite row : rows) {
-			final String preisText = ((Text)row.getChildren()[1]).getText();
-			if (preisText.length() == 0) continue;
-			final BigDecimal wert = new BigDecimal(preisText);
-			ergebnis = ergebnis.add(wert);
+		for (final Row row : rows) {
+			ergebnis = ergebnis.add(row.getPreis());
 		}
 		return ergebnis;
 	}
 
 	private void disposeRows() {
-		for (final Composite row : rows) {
-			row.dispose();
+		for (final Row row : rows) {
+			if (row instanceof RowComposite) {
+				((RowComposite)row).dispose();
+			}
 		}
 		rows.clear();
 	}

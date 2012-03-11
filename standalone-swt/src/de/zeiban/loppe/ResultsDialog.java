@@ -46,7 +46,8 @@ public class ResultsDialog extends Dialog {
         shell.setLayout(layout);
         
         shell.setText(getText());
-        final Table table = createContents(shell);
+        @SuppressWarnings("unused")
+		final Table table = createContents(shell);
         createButtonAbspeichern(shell, shell);
         shell.pack();
         shell.setSize(500, 600);
@@ -84,7 +85,8 @@ public class ResultsDialog extends Dialog {
         c5.setText("Verkäufer-Prozent");
         c5.setWidth(120);
         final NumberFormat f = java.text.NumberFormat.getCurrencyInstance();
-        int idx = 1;
+        @SuppressWarnings("unused")
+		int idx = 1;
         for (final Result result : data) {
             final TableItem ti = new TableItem(table, SWT.NULL);
             //ti.setText(String.valueOf(idx));
