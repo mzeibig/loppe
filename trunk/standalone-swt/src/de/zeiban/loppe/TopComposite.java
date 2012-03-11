@@ -18,7 +18,7 @@ import de.zeiban.loppe.data.SummeGesamtInfoProvider;
  * 
  * @author mirkoz
  */
-public class TopComposite extends Composite {
+public class TopComposite extends Composite implements TopInfos {
 
 	private final Label summeGesamtInfo;
 	private final Label kundeCountInfo;

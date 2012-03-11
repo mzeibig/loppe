@@ -11,11 +11,8 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
-import de.zeiban.loppe.data.SummeGesamtInfoProvider;
 import de.zeiban.loppe.dbcore.DbTemplate;
 import de.zeiban.loppe.properties.PropertyReader;
 
@@ -77,9 +74,9 @@ public class Flohmarkt {
 		final ScrolledComposite sc = new ScrolledComposite(shell, SWT.BORDER|SWT.V_SCROLL);
 		sc.setAlwaysShowScrollBars(true);
 		sc.setBackgroundMode(SWT.INHERIT_DEFAULT);
-		final ResizeListener resizeListener = new ResizeListener(display, sc);
-		sc.addListener(SWT.Resize, resizeListener);
-		content = new HeaderSpaceAndTableComposite(sc, SWT.NONE, connection, shell);
+//		final ResizeListener resizeListener = new ResizeListener(display, sc);
+//		sc.addListener(SWT.Resize, resizeListener);
+		content = new HeaderSpaceAndTableComposite(sc, SWT.NONE, connection);
 		//createButtons(content);
 		
 		if ( isMac() ) {
@@ -91,9 +88,7 @@ public class Flohmarkt {
 	    }
 		sc.setContent(content);
 
-		final Menu menuBar = createMenu(shell);
-		shell.setMenuBar(menuBar);
-
+		shell.setMenuBar(new MenuBar(shell, content, connection, loppeShare).menuBarInstance());
 		shell.pack();
 		shell.setSize(800, 600);
 		shell.open();
@@ -104,7 +99,7 @@ public class Flohmarkt {
 		}
 		try {connection.close();} catch (final Exception ignore){}
 		icon.dispose();
-		resizeListener.dispose();
+//		resizeListener.dispose();
 		display.dispose();
 	}
 
@@ -119,46 +114,5 @@ public class Flohmarkt {
 			db.execute("CREATE TABLE KAUF(INST INTEGER,KUNDE INTEGER,NUMMER INTEGER,PREIS DECIMAL)");
 		}
 	}
-
-	private Menu createMenu(final Shell parent) {
-		final Menu menuBar = new Menu (parent, SWT.BAR);
-		final MenuItem verwaltungItem = new MenuItem(menuBar,SWT.CASCADE);
-		verwaltungItem.setText("Verwaltung");
-		final MenuItem adminItem = new MenuItem(menuBar,SWT.CASCADE);
-		adminItem.setText("Admin");
-		
-		final MenuItem hilfeItem = new MenuItem(menuBar,SWT.CASCADE);
-		hilfeItem.setText("Hilfe");
-
-		final Menu verwaltungMenu = new Menu(menuBar);
-		verwaltungItem.setMenu(verwaltungMenu);
-		final MenuItem auswertungItem = new MenuItem(verwaltungMenu,SWT.NONE);
-		auswertungItem.setText("Auswertung");
-		auswertungItem.addSelectionListener(new AuswertungSelectionAdapter(parent, connection, loppeShare));
-//		MenuItem blackListItem = new MenuItem(verwaltungMenu,SWT.NONE);
-//		blackListItem.setText("Black-List pflegen");
-//		MenuItem whiteListItem = new MenuItem(verwaltungMenu,SWT.NONE);
-//		whiteListItem.setText("White-List pflegen");
-		final MenuItem infoItem = new MenuItem(verwaltungMenu,SWT.NONE);
-		infoItem.setText("Info");	
-		infoItem.addSelectionListener(new InfoSelectionAdapter(parent, loppeShare));
-		if (!isMac()) {
-			final MenuItem exitItem = new MenuItem(verwaltungMenu,SWT.NONE);
-			exitItem.setText("Exit");
-			exitItem.addSelectionListener(new ExitSelectionAdapter(parent, connection));
-		}
-		final Menu adminMenu = new Menu(menuBar);
-		adminItem.setMenu(adminMenu);
-		final MenuItem exportItem = new MenuItem(adminMenu,SWT.NONE);
-		exportItem.setText("Daten exportieren");
-		exportItem.addSelectionListener(new ExportSelectionAdapter(shell, connection));
-		final MenuItem importItem = new MenuItem(adminMenu,SWT.NONE);
-		importItem.setText("Daten importieren");
-		importItem.addSelectionListener(new ImportSelectionAdapter(shell, connection, content.topComposite.getSummeLabel(), new SummeGesamtInfoProvider(connection)));
-		final MenuItem dbresetItem = new MenuItem(adminMenu,SWT.NONE);
-		dbresetItem.setText("Datenbank zurücksetzen");
-		dbresetItem.addSelectionListener(new DBResetSelectionAdapter(shell, connection));		
-		return menuBar;
-	}
-
+	
 }

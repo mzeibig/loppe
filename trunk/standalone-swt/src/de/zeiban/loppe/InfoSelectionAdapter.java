@@ -13,8 +13,8 @@ final class InfoSelectionAdapter extends SelectionAdapter {
 	private Shell shell;
 	private BigDecimal loppeShare;
 
-	public InfoSelectionAdapter(Shell parent, BigDecimal loppeShare) {
-		this.shell = parent;
+	public InfoSelectionAdapter(Shell shell, BigDecimal loppeShare) {
+		this.shell = shell;
 		this.loppeShare = loppeShare;
 	}
 

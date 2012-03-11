@@ -16,10 +16,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
+import de.zeiban.loppe.data.SummeGesamtInfoProvider;
 import de.zeiban.loppe.data.Summenprovider;
 import de.zeiban.loppe.dbcore.DbTemplate;
 import de.zeiban.loppe.dbcore.ParamProvider;
@@ -28,14 +28,14 @@ final class ImportSelectionAdapter extends SelectionAdapter {
 	
 	private final Shell shell;
 	private final Connection connection;
-	private final Label summeGesamt;
+	private final Content content;
 	private final Summenprovider summenprovider;
 	
-	public ImportSelectionAdapter(final Shell shell, final Connection connection, final Label summeGesamt, final Summenprovider summenprovider) {
+	public ImportSelectionAdapter(final Shell shell, final Connection connection, final Content content) {
 		this.shell = shell;
 		this.connection = connection;
-		this.summeGesamt = summeGesamt;
-		this.summenprovider = summenprovider;
+		this.content = content;
+		this.summenprovider = new SummeGesamtInfoProvider(connection);
 	}
 	
 	@Override
@@ -67,7 +67,7 @@ final class ImportSelectionAdapter extends SelectionAdapter {
 				} finally {
 					try {reader.close();} catch (final Exception ignore) {}
 				}  				
-				this.summeGesamt.setText(summenprovider.getSumme());
+				this.content.setSummeGesamt(summenprovider.getSumme());
 			}
 		}
 	}
