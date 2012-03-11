@@ -22,23 +22,24 @@ import de.zeiban.loppe.data.KundeCountProvider;
 import de.zeiban.loppe.data.Row;
 import de.zeiban.loppe.data.SummeGesamtInfoProvider;
 
-public class HeaderSpaceAndTableComposite extends Composite implements KeyListener {
+public class HeaderSpaceAndTableComposite extends Composite implements KeyListener, Content {
 	private final List<Row> rows = new ArrayList<Row>();
-	protected TopComposite topComposite;
+	private TopInfos topComposite;
 	private Connection connection;
 	private int inst = System.getProperty("user.name").hashCode();
 	private Shell shell;
 	
-	public HeaderSpaceAndTableComposite(Composite parent, int style, Connection connection, Shell shell) {
+	public HeaderSpaceAndTableComposite(Composite parent, int style, Connection connection) {
 		super(parent, style);
 		this.connection = connection;
-		this.shell = shell;
+		this.shell = parent.getShell();
 		addKeyListener(this);
 		this.setLayout(new RowLayout(SWT.VERTICAL));
 		this.topComposite = new TopComposite(this, connection);
 		new SpaceComposite(this);
-		new TableHeaderComposite(this);
-		rows.add(new RowComposite(this.shell, this, this));
+		new TableHeaderComposite(this);		
+		KeyListener keyListener = this;
+		rows.add(new RowComposite(this.shell, this, keyListener));		
 		this.setSize(800, 600);
 	}
 	
@@ -74,13 +75,13 @@ public class HeaderSpaceAndTableComposite extends Composite implements KeyListen
 
 	//    @Override
 	public void keyReleased(final KeyEvent e) {
-		if ((int)e.character  == 13 && e.stateMask == 0) {
+		if (returnPressed(e)) {
 			topComposite.setZwischensumme(calculate(rows));
 			rows.add(new RowComposite(this.shell, this, this));
 			this.pack(true);
 			final ScrolledComposite sc = ((ScrolledComposite)this.getParent());
 			sc.setOrigin(0, Integer.MAX_VALUE);
-		} else if ((int)e.character  == 13 && e.stateMask == SWT.CTRL) {
+		} else if (ctrlReturnPressed(e)) {
 			final BigDecimal summe = calculate(rows);
 			final MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO|SWT.CANCEL);
 			messageBox.setMessage("Summe: "+NumberFormat.getCurrencyInstance().format(summe)+"\nDaten übernehmen?");
@@ -95,8 +96,7 @@ public class HeaderSpaceAndTableComposite extends Composite implements KeyListen
 				topComposite.setZwischensumme(BigDecimal.ZERO);
 				rows.add(new RowComposite(this.shell, this, this));
 				this.pack(true);
-			}
-			if (messageBoxAnswer == SWT.CANCEL) {
+			} else if (messageBoxAnswer == SWT.CANCEL) {
 				final MessageBox confirmMessageBox = new MessageBox(shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO);
 				confirmMessageBox.setMessage("Alle Daten verwerfen ?");
 				if (confirmMessageBox.open() == SWT.YES) {
@@ -107,6 +107,14 @@ public class HeaderSpaceAndTableComposite extends Composite implements KeyListen
 				}
 			}
 		}
+	}
+
+	private static boolean ctrlReturnPressed(final KeyEvent e) {
+		return (int)e.character  == 13 && e.stateMask == SWT.CTRL;
+	}
+
+	private static boolean returnPressed(final KeyEvent e) {
+		return (int)e.character  == 13 && e.stateMask == 0;
 	}
 
 	private static BigDecimal calculate(final List<Row> rows) {
@@ -124,6 +132,10 @@ public class HeaderSpaceAndTableComposite extends Composite implements KeyListen
 			}
 		}
 		rows.clear();
+	}
+
+	public void setSummeGesamt(String summe) {
+		topComposite.setSummeGesamt(summe);
 	}
 
 }
