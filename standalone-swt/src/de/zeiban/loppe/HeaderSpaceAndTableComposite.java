@@ -24,12 +24,12 @@ import de.zeiban.loppe.data.SummeGesamtInfoProvider;
 
 public class HeaderSpaceAndTableComposite extends Composite implements KeyListener, Content {
 	private final List<Row> rows = new ArrayList<Row>();
-	private TopInfos topComposite;
-	private Connection connection;
-	private int inst = System.getProperty("user.name").hashCode();
-	private Shell shell;
+	private final TopInfos topComposite;
+	private final Connection connection;
+	private final int inst = System.getProperty("user.name").hashCode();
+	private final Shell shell;
 	
-	public HeaderSpaceAndTableComposite(Composite parent, int style, Connection connection) {
+	public HeaderSpaceAndTableComposite(final Composite parent, final int style, final Connection connection) {
 		super(parent, style);
 		this.connection = connection;
 		this.shell = parent.getShell();
@@ -38,7 +38,7 @@ public class HeaderSpaceAndTableComposite extends Composite implements KeyListen
 		this.topComposite = new TopComposite(this, connection);
 		new SpaceComposite(this);
 		new TableHeaderComposite(this);		
-		KeyListener keyListener = this;
+		final KeyListener keyListener = this;
 		rows.add(new RowComposite(this.shell, this, keyListener));		
 		this.setSize(800, 600);
 	}
@@ -134,7 +134,7 @@ public class HeaderSpaceAndTableComposite extends Composite implements KeyListen
 		rows.clear();
 	}
 
-	public void setSummeGesamt(String summe) {
+	public void setSummeGesamt(final String summe) {
 		topComposite.setSummeGesamt(summe);
 	}
 

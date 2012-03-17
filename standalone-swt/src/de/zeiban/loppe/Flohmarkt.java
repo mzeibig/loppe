@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
+import de.zeiban.loppe.dbcore.DbOperations;
 import de.zeiban.loppe.dbcore.DbTemplate;
 import de.zeiban.loppe.properties.PropertyReader;
 
@@ -104,7 +105,7 @@ public class Flohmarkt {
 	}
 
 	private void initDb(Connection connection) {
-		DbTemplate db = new DbTemplate(connection);
+		DbOperations db = new DbTemplate(connection);
 		Integer tabzahl = 
 				db.selectInteger(
 						"SELECT count(*) " +

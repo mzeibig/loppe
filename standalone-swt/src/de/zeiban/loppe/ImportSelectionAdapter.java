@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -56,7 +58,13 @@ final class ImportSelectionAdapter extends SelectionAdapter {
 								stmt.setInt(1, Integer.valueOf(splitted[0]));
 								stmt.setInt(2, Integer.valueOf(splitted[1]));
 								stmt.setInt(3, Integer.valueOf(splitted[2]));
-								stmt.setBigDecimal(4, new BigDecimal(splitted[3]));
+								DecimalFormat df = new DecimalFormat("###.##");
+								df.setParseBigDecimal(true);
+								try {
+									stmt.setBigDecimal(4, (BigDecimal) df.parse(splitted[3]));
+								} catch (ParseException e) {
+									throw new RuntimeException(e);
+								}
 							}
 						});
 						zeile = reader.readLine();

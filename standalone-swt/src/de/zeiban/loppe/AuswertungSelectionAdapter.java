@@ -16,12 +16,13 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Shell;
 
 import de.zeiban.loppe.ResultsDialog.Result;
+import de.zeiban.loppe.dbcore.DbOperations;
 import de.zeiban.loppe.dbcore.DbTemplate;
 import de.zeiban.loppe.dbcore.ResultCallback;
 
 final class AuswertungSelectionAdapter extends SelectionAdapter {
 	private final Shell shell;
-	private DbTemplate dbTemplate;
+	private DbOperations dbTemplate;
 	private BigDecimal loppeShare;
 	
 	public AuswertungSelectionAdapter(final Shell shell, final Connection connection, final BigDecimal loppeShare) {
@@ -33,7 +34,7 @@ final class AuswertungSelectionAdapter extends SelectionAdapter {
 	@Override
 	public void widgetSelected(final SelectionEvent e) {
 		final List<ResultsDialog.Result> resultList = new ArrayList<Result>();
-		dbTemplate.select("select nummer, sum(preis) from kauf group by nummer order by nummer",  
+		dbTemplate.execute("select nummer, sum(preis) from kauf group by nummer order by nummer",  
 				new ResultCallback() {
 					public void doWithResultset(final ResultSet rs) throws SQLException {
 						while (rs.next()) {
