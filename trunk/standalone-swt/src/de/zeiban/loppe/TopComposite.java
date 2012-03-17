@@ -3,6 +3,7 @@ package de.zeiban.loppe;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.text.NumberFormat;
+import java.util.Locale;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.RowData;
@@ -28,19 +29,21 @@ public class TopComposite extends Composite implements TopInfos {
 	public TopComposite(final Composite parent, final Connection connection) {
 		super(parent, SWT.BORDER);
 		this.setLayout(new RowLayout(SWT.HORIZONTAL));
-		summeGesamtInfo = createLabelValueComposite(this, "Summe:", "0.00");
+		summeGesamtInfo = createLabelValueComposite(this, "Summe:", "0.00", 50, 60);
 		summeGesamtInfo.setText(new SummeGesamtInfoProvider(connection).getSumme());
-		kundeCountInfo = createLabelValueComposite(this, "Anzahl Kunden:", "0");
+		kundeCountInfo = createLabelValueComposite(this, "Anzahl Kunden:", "0", 100, 30);
 		kundeCountInfo.setText(new KundeCountProvider(connection).getNextKundeCount());
-		zwischensumme = createLabelValueComposite(this, "Zwischensumme:", "0.00");
-		letzterKunde = createLabelValueComposite(this, "letzter Kunde:", "0.00");
+		zwischensumme = createLabelValueComposite(this, "Zwischensumme:", "0.00", 110, 50);
+		setZwischensumme(new BigDecimal(0));
+		letzterKunde = createLabelValueComposite(this, "letzter Kunde:", "0.00", 90, 50);
+		setLetzterKunde(new BigDecimal(0));
 	}
 	
 	public String getKundeCountAsString() {
 		return kundeCountInfo.getText();
 	}
 	
-	public void setKundeCount(String count) {
+	public void setKundeCount(final String count) {
 		this.kundeCountInfo.setText(count);
 	}
 
@@ -53,28 +56,26 @@ public class TopComposite extends Composite implements TopInfos {
 		return this.summeGesamtInfo;
 	}
 
-	public void setSummeGesamt(String summe) {
+	public void setSummeGesamt(final String summe) {
 		this.summeGesamtInfo.setText(summe);
 	}
 	
-	public void setZwischensumme(BigDecimal summe) {
-		this.zwischensumme.setText(NumberFormat.getCurrencyInstance().format(summe));
+	final public void setZwischensumme(final BigDecimal summe) {
+		this.zwischensumme.setText(NumberFormat.getCurrencyInstance(Locale.GERMANY).format(summe));
 	}
 	
-	public void setLetzterKunde(BigDecimal summe) {
-		letzterKunde.setText(NumberFormat.getCurrencyInstance().format(summe));
+	final public void setLetzterKunde(final BigDecimal summe) {
+		letzterKunde.setText(NumberFormat.getCurrencyInstance(Locale.GERMANY).format(summe));
 	}
 
-	private Label createLabelValueComposite(final Composite parent, String labelText, String initValue) {
+	private Label createLabelValueComposite(final Composite parent, final String labelText, final String initValue, final int width, final int widthValue) {
 		final Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new RowLayout(SWT.HORIZONTAL));
 		final Label label = new Label(composite, SWT.NONE);
-		final RowData rowData = new RowData();
-		rowData.width = 110;
-		label.setLayoutData(rowData);
+		label.setLayoutData(new RowData(width, SWT.DEFAULT));
 		label.setText(labelText);
 		final Label cnt = new Label(composite, SWT.CENTER);
-		cnt.setLayoutData(new RowData(60, SWT.DEFAULT));
+		cnt.setLayoutData(new RowData(widthValue, SWT.DEFAULT));
 		cnt.setText(initValue);
 		return cnt;
 	}

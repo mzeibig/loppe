@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 
-public class DbTemplate {
+public class DbTemplate implements DbOperations {
 	
 	private final static Logger LOGGER = Logger.getLogger(DbTemplate.class);
 	private final Connection connection;
@@ -19,11 +19,11 @@ public class DbTemplate {
 		this.connection = connection;
 	}
 	
-	public void select(final String sql, final ResultCallback resultCallback) {
-		select(sql, null, resultCallback);
+	public void execute(final String sql, final ResultCallback resultCallback) {
+		execute(sql, null, resultCallback);
 	}
 	
-	public void select(final String sql, final ParamProvider paramProvider, final ResultCallback resultCallback) {
+	public void execute(final String sql, final ParamProvider paramProvider, final ResultCallback resultCallback) {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
@@ -33,8 +33,9 @@ public class DbTemplate {
 			}
 			rs = stmt.executeQuery();
 			resultCallback.doWithResultset(rs);
-		} catch (final SQLException e1) {
-			LOGGER.error("Fehler beim Datenbankzugriff:" + e1.getMessage(), e1);;
+		} catch (final SQLException e) {
+			LOGGER.error("Fehler beim Datenbankzugriff:" + e.getMessage(), e);
+			throw new DbAccessException("Fehler beim Datenbankzugriff:" + e.getMessage(), e);
 		} finally {
 			try {rs.close();} catch (final Exception ignore) {}
 			try {stmt.close();} catch (final Exception ignore) {}
@@ -51,6 +52,7 @@ public class DbTemplate {
 	
 	public <T> T selectObject(final String sql, final ParamProvider paramProvider) {
 		return selectObject(sql, paramProvider, new ResultCallbackWithReturn<T>() {
+			@SuppressWarnings("unchecked")
 			public T doWithResultset(ResultSet rs) throws SQLException {
 				if (rs.next()) {
 					return (T) rs.getObject(1);
@@ -71,9 +73,9 @@ public class DbTemplate {
 			}
 			rs = stmt.executeQuery();
 			return resultCallback.doWithResultset(rs);
-		} catch (final SQLException e1) {
-			LOGGER.error("Fehler beim Datenbankzugriff:" + e1.getMessage(), e1);;
-			return null;
+		} catch (final SQLException e) {
+			LOGGER.error("Fehler beim Datenbankzugriff:" + e.getMessage(), e);
+			throw new DbAccessException("Fehler beim Datenbankzugriff:" + e.getMessage(), e);
 		} finally {
 			try {rs.close();} catch (final Exception ignore) {}
 			try {stmt.close();} catch (final Exception ignore) {}
@@ -93,9 +95,9 @@ public class DbTemplate {
 				return rs.getBoolean(1);
 			}
 			return false;
-		} catch (final SQLException e1) {
-			LOGGER.error("Fehler beim Datenbankzugriff:" + e1.getMessage(), e1);;
-			return false;
+		} catch (final SQLException e) {
+			LOGGER.error("Fehler beim Datenbankzugriff:" + e.getMessage(), e);
+			throw new DbAccessException("Fehler beim Datenbankzugriff:" + e.getMessage(), e);
 		} finally {
 			try {rs.close();} catch (final Exception ignore) {}
 			try {stmt.close();} catch (final Exception ignore) {}
@@ -119,7 +121,7 @@ public class DbTemplate {
 	}
 
 	public boolean execute(final String sql) {
-		return execute(sql, null);
+		return execute(sql, (ParamProvider) null);
 	}
 	
 	public boolean execute(final String sql, final ParamProvider paramProvider) {
@@ -130,9 +132,9 @@ public class DbTemplate {
 				paramProvider.fillParams(stmt);
 			}
 			return stmt.execute();
-		} catch (final SQLException e1) {
-			e1.printStackTrace();
-			return false;
+		} catch (final SQLException e) {
+			LOGGER.error("Fehler beim Datenbankzugriff:" + e.getMessage(), e);
+			throw new DbAccessException("Fehler beim Datenbankzugriff:" + e.getMessage(), e);
 		} finally {
 			try {stmt.close();} catch (final Exception ignore) {}
 		}

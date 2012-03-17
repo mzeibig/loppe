@@ -11,11 +11,12 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
+import de.zeiban.loppe.dbcore.DbOperations;
 import de.zeiban.loppe.dbcore.DbTemplate;
 
 final class DBResetSelectionAdapter extends SelectionAdapter {
 	private final Shell shell;
-	private final DbTemplate dbTemplate;
+	private final DbOperations dbTemplate;
 
 	public DBResetSelectionAdapter(final Shell shell, final Connection connection) {
 		this.shell = shell;

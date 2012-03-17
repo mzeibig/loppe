@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -24,7 +25,7 @@ import de.zeiban.loppe.dbcore.*;
 
 final class ExportSelectionAdapter extends SelectionAdapter {
 	private final Shell shell;
-	private final DbTemplate dbTemplate;
+	private final DbOperations dbTemplate;
 
 	public ExportSelectionAdapter(final Shell shell, final Connection connection) {
 		this.shell = shell;
@@ -44,7 +45,7 @@ final class ExportSelectionAdapter extends SelectionAdapter {
 				final File file = new File(fileName);
 				try {
 					final PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-					dbTemplate.select("select inst, kunde, nummer, preis from kauf", 
+					dbTemplate.execute("select inst, kunde, nummer, preis from kauf", 
 						new ResultCallback() {
 							public void doWithResultset(final ResultSet rs) throws SQLException {
 								while (rs.next()) {
@@ -59,7 +60,7 @@ final class ExportSelectionAdapter extends SelectionAdapter {
 									.append(";")
 									.append(nummer)
 									.append(";")
-									.append(preis);
+									.append(new DecimalFormat("###.##").format(preis));
 									writer.println(sb.toString());
 								}
 								writer.close();
