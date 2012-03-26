@@ -10,9 +10,6 @@
 	<property name="lib.swt.win32" value="lib/swt-${swt.version}-win32-win32-x86"/>
 	<property name="build.dir" value="build" />
 	<property name="src.dir" value="src" />
-
-
-
 	
 	<!-- paths used for compilation and run  -->
 	<path id="lib.path.id">
@@ -118,22 +115,39 @@
     <target name="distribution" depends="jar" description="description">
         <zip destfile="dist/loppe-osx-${ivy.revision}.zip">
         	<fileset dir="dist" includes="loppe-osx.jar"/>
+        	<fileset dir="script/osx" includes="loppe"/>
             <fileset dir="lib" includes="hsqldb-${hsql.version}.jar"/>
             <fileset dir="lib" includes="log4j-${log4j.version}.jar"/>
             <fileset dir="lib/swt-${swt.version}-cocoa-macosx-x86_64" includes="swt.jar"/>
         </zip>
+    	<tar destfile="dist/loppe-osx-${ivy.revision}.tgz" compression="gzip">
+            <fileset dir="dist" includes="loppe-osx.jar"/>
+            <tarfileset dir="script/osx" includes="loppe" filemode="744"/>
+            <fileset dir="lib" includes="hsqldb-${hsql.version}.jar"/>
+            <fileset dir="lib" includes="log4j-${log4j.version}.jar"/>
+            <fileset dir="lib/swt-${swt.version}-cocoa-macosx-x86_64" includes="swt.jar"/>    		
+    	</tar>
         <zip destfile="dist/loppe-win32-${ivy.revision}.zip">
             <fileset dir="dist" includes="loppe-win32.jar"/>
+        	<fileset dir="script/win" includes="loppe.cmd"/>
             <fileset dir="lib" includes="hsqldb-${hsql.version}.jar"/>
             <fileset dir="lib" includes="log4j-${log4j.version}.jar"/>
             <fileset dir="lib/swt-${swt.version}-win32-win32-x86" includes="swt.jar"/>
         </zip>
         <zip destfile="dist/loppe-linux-${ivy.revision}.zip">
             <fileset dir="dist" includes="loppe-linux.jar"/>
+            <fileset dir="script/linux" includes="loppe"/>
             <fileset dir="lib" includes="hsqldb-${hsql.version}.jar"/>
             <fileset dir="lib" includes="log4j-${log4j.version}.jar"/>
             <fileset dir="lib/swt-${swt.version}-gtk-linux-x86" includes="swt.jar"/>
         </zip>
+        <tar destfile="dist/loppe-linux-${ivy.revision}.tgz" compression="gzip">
+            <fileset dir="dist" includes="loppe-linux.jar"/>
+            <tarfileset dir="script/linux" includes="loppe" filemode="744"/>
+            <fileset dir="lib" includes="hsqldb-${hsql.version}.jar"/>
+            <fileset dir="lib" includes="log4j-${log4j.version}.jar"/>
+            <fileset dir="lib/swt-${swt.version}-gtk-linux-x86" includes="swt.jar"/>
+        </tar>
     </target>
 
 
