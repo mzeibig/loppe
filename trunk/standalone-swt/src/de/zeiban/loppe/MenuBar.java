@@ -18,7 +18,7 @@ public class MenuBar {
 		menuBar = new Menu(shell, SWT.BAR);
 		new VerwaltungMenu(menuBar, connection, loppeShare);
 		new AdminMenu(menuBar, connection, content);
-		if (!SWT.getPlatform().equals("cocoa")) {
+		if (!isMac()) {
 			new HilfeMenu(menuBar);
 		}
 	}
@@ -71,9 +71,6 @@ public class MenuBar {
 			}
 		}
 		
-		private static boolean isMac() {
-			return SWT.getPlatform().equals("cocoa");
-		}
 	}
 	
 	static class AdminMenu {
@@ -95,5 +92,9 @@ public class MenuBar {
 			dbresetItem.setText("Datenbank zurücksetzen");
 			dbresetItem.addSelectionListener(new DBResetSelectionAdapter(shell, connection, content));
 		}
+	}
+	
+	private static boolean isMac() {
+		return SWT.getPlatform().equals("cocoa");
 	}
 }
