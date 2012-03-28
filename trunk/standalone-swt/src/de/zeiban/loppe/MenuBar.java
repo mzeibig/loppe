@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -16,7 +18,9 @@ public class MenuBar {
 		menuBar = new Menu(shell, SWT.BAR);
 		new VerwaltungMenu(menuBar, connection, loppeShare);
 		new AdminMenu(menuBar, connection, content);
-		new HilfeMenu(menuBar);
+		if (!SWT.getPlatform().equals("cocoa")) {
+			new HilfeMenu(menuBar);
+		}
 	}
 
 	public Menu menuBarInstance() {
@@ -26,8 +30,19 @@ public class MenuBar {
 	static class HilfeMenu {
 		final MenuItem hilfeItem;
 		public HilfeMenu(final Menu menuBar) {
+			final Shell shell = menuBar.getShell();
 			hilfeItem = new MenuItem(menuBar, SWT.CASCADE);
 			hilfeItem.setText("Hilfe");
+			Menu hilfeMenu = new Menu(menuBar);
+			hilfeItem.setMenu(hilfeMenu);
+			MenuItem aboutItem = new MenuItem(hilfeMenu, SWT.NONE);
+			aboutItem.setText("About...");
+			aboutItem.addSelectionListener(new SelectionAdapter() {
+				
+				public void widgetSelected(SelectionEvent e) {
+					new AboutDialog(shell).open(); 
+				}
+			});
 		}
 	}
 	
