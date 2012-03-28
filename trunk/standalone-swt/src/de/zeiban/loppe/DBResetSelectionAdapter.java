@@ -3,6 +3,7 @@
  */
 package de.zeiban.loppe;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 
 import org.eclipse.swt.SWT;
@@ -17,9 +18,11 @@ import de.zeiban.loppe.dbcore.DbTemplate;
 final class DBResetSelectionAdapter extends SelectionAdapter {
 	private final Shell shell;
 	private final DbOperations dbTemplate;
+	private Content content;
 
-	public DBResetSelectionAdapter(final Shell shell, final Connection connection) {
+	public DBResetSelectionAdapter(final Shell shell, final Connection connection, Content content) {
 		this.shell = shell;
+		this.content = content;
 		dbTemplate = new DbTemplate(connection);
 	}
 
@@ -32,6 +35,8 @@ final class DBResetSelectionAdapter extends SelectionAdapter {
 			confirmMessageBox.setMessage("Wirklich alle Daten aus der Datenbank löschen ?");
 			if (confirmMessageBox.open() == SWT.YES) {
 				dbTemplate.execute("delete from kauf");
+				content.setSummeGesamt(BigDecimal.ZERO);
+				content.setKundeCount(0);
 			}
 
 		}

@@ -17,18 +17,16 @@ public class KundeCountProvider {
 		dbTemplate = new DbTemplate(connection);
 	}
 
-	public String getNextKundeCount() {
-		return dbTemplate.selectObject("select max(kunde) from kauf", new ResultCallbackWithReturn<String>() {
-			public String doWithResultset(final ResultSet rs) throws SQLException {
+	public int getNextKundeCount() {
+		return dbTemplate.selectObject("select max(kunde) from kauf", new ResultCallbackWithReturn<Integer>() {
+			public Integer doWithResultset(final ResultSet rs) throws SQLException {
 				int count;
 				if (!rs.next())
 					count = 1;
 				else
 					count = rs.getInt(1);
-				return String.valueOf(count + 1);
-				
+				return count + 1;
 			}
-			
 		});
 	}
 }
