@@ -36,7 +36,12 @@ public class Flohmarkt {
 	}
 
 	private final class CocoaAboutListener implements Listener {
+		Shell shell;
+		public CocoaAboutListener(Shell shell) {
+			this.shell = shell;
+		}
 		public void handleEvent(final Event event) {
+			new AboutDialog(this.shell).open(); 
 		}
 	}
 
@@ -84,7 +89,7 @@ public class Flohmarkt {
 	        final CocoaUIEnhancer enhancer = new CocoaUIEnhancer("Flohmarkt");
 	        enhancer.hookApplicationMenu(display, 
 	        		new CocoaQuitListener(), 
-	        		new CocoaAboutListener(), 
+	        		new CocoaAboutListener(shell), 
 	        		new CocoaSettingsListener());
 	    }
 		sc.setContent(content);
