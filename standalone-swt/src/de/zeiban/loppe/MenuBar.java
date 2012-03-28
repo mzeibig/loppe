@@ -78,7 +78,7 @@ public class MenuBar {
 			importItem.addSelectionListener(new ImportSelectionAdapter(shell, connection, content));
 			final MenuItem dbresetItem = new MenuItem(adminMenu, SWT.NONE);
 			dbresetItem.setText("Datenbank zurücksetzen");
-			dbresetItem.addSelectionListener(new DBResetSelectionAdapter(shell, connection));
+			dbresetItem.addSelectionListener(new DBResetSelectionAdapter(shell, connection, content));
 		}
 	}
 }

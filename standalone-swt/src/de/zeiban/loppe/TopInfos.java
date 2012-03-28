@@ -6,11 +6,11 @@ public interface TopInfos {
 
 	String getKundeCountAsString();
 
-	void setKundeCount(String count);
+	void setKundeCount(int count);
 
 	String getSummeGesamtAsString();
 
-	void setSummeGesamt(String summe);
+	void setSummeGesamt(BigDecimal summe);
 
 	void setZwischensumme(BigDecimal summe);
 

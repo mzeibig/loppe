@@ -134,8 +134,12 @@ public class HeaderSpaceAndTableComposite extends Composite implements KeyListen
 		rows.clear();
 	}
 
-	public void setSummeGesamt(final String summe) {
+	public void setSummeGesamt(final BigDecimal summe) {
 		topComposite.setSummeGesamt(summe);
+	}
+	
+	public void setKundeCount(int count) {
+		topComposite.setKundeCount(count);
 	}
 
 }
