@@ -15,7 +15,7 @@ public class NumberVerifyer implements VerifyListener {
 		char myChar = event.character;
 		Text textfield = (Text) event.widget;
 		String oldtext = textfield.getText();
-		System.out.println(oldtext+myChar);
+		//System.out.println(oldtext+myChar);
 		event.doit = (Character.isDigit(myChar) || myChar == '\b');
 	}
 }
