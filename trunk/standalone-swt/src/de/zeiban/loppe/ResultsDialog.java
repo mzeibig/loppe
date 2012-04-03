@@ -118,9 +118,9 @@ public class ResultsDialog extends Dialog {
 
 		@Override
 		public void widgetSelected(final SelectionEvent e) {
-		    System.out.println("BUTTON-Abspeichern");
 		    final FileDialog dlg = new FileDialog(shell, SWT.SAVE);
 		    dlg.setFilterExtensions(new String[]{"*.csv"});
+			dlg.setFilterNames(new String[]{"Comma Separated Values"});
 		    final String fileName = dlg.open();
 		    if (fileName != null) {
 		    	final File file = new File(fileName);
