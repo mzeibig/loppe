@@ -48,7 +48,7 @@ public class ResultsDialog extends Dialog {
         shell.setText(getText());
         @SuppressWarnings("unused")
 		final Table table = createContents(shell);
-        createButtonAbspeichern(shell, shell);
+        createButtonAbspeichern(shell);
         shell.pack();
         shell.setSize(500, 600);
         shell.open();
@@ -63,46 +63,35 @@ public class ResultsDialog extends Dialog {
     private Table createContents(final Shell shell) {
     	final ScrolledComposite sc = new ScrolledComposite(shell, SWT.BORDER|SWT.V_SCROLL);
         sc.setAlwaysShowScrollBars(false);
-        //sc.setLayoutData(new GridData(GridData.FILL_BOTH));
-        //sc.setBackgroundMode(SWT.INHERIT_DEFAULT);
+        sc.setLayout(new FillLayout());
         final Composite content = new Composite(sc, SWT.NONE);
         content.setLayout(new FillLayout());
         final Table table = new Table(content, SWT.NULL);
         table.setHeaderVisible(true);
-//        TableColumn c1 = new TableColumn(table, SWT.NULL);
-//        c1.setText("Index");
-//        c1.setWidth(60);
         final TableColumn c2 = new TableColumn(table, SWT.RIGHT);
         c2.setText("Nummer");
-        c2.setWidth(60);
+        c2.setWidth(140);
         final TableColumn c3 = new TableColumn(table, SWT.RIGHT);
         c3.setText("Summe");
-        c3.setWidth(60);
-        final TableColumn c4 = new TableColumn(table, SWT.RIGHT);
-        c4.setText("Kiga-Prozent");
-        c4.setWidth(100);
+        c3.setWidth(140);
         final TableColumn c5 = new TableColumn(table, SWT.RIGHT);
         c5.setText("Verkäufer-Prozent");
-        c5.setWidth(120);
-        final NumberFormat f = java.text.NumberFormat.getCurrencyInstance();
-        @SuppressWarnings("unused")
-		int idx = 1;
+        c5.setWidth(140);
+        final NumberFormat f = NumberFormat.getCurrencyInstance();
         for (final Result result : data) {
             final TableItem ti = new TableItem(table, SWT.NULL);
-            //ti.setText(String.valueOf(idx));
             ti.setText(0, String.valueOf(result.nummer));
             ti.setText(1, f.format(result.summe));
             ti.setText(2, f.format(result.prozKiga));
             ti.setText(3, f.format(result.prozSeller));
-            idx++;
         }
         content.setSize(450, 500);
         sc.setContent(content);
         return table;
     }
 
-    private void createButtonAbspeichern(final Composite parent, final Shell shell) {
-        final Button export = new Button(parent, SWT.PUSH);
+    private void createButtonAbspeichern(final Shell shell) {
+        final Button export = new Button(shell, SWT.PUSH);
         export.setText("Als CSV Abspeichern");
         //export.setSize(30, 10);
         export.addSelectionListener(new SelectionAdapterExtension(shell));
