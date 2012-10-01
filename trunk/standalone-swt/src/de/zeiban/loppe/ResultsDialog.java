@@ -48,7 +48,7 @@ public class ResultsDialog extends Dialog {
         shell.setText(getText());
         @SuppressWarnings("unused")
 		final Table table = createContents(shell);
-        createButtonAbspeichern(shell);
+        createButtons(shell);
         shell.pack();
         shell.setSize(500, 600);
         shell.open();
@@ -89,11 +89,22 @@ public class ResultsDialog extends Dialog {
         return table;
     }
 
-    private void createButtonAbspeichern(final Shell shell) {
-        final Button export = new Button(shell, SWT.PUSH);
+    private void createButtons(final Shell shell) {
+    	final Composite content = new Composite(shell, SWT.NONE);
+    	content.setLayout(new FillLayout());
+        final Button export = new Button(content, SWT.PUSH);
         export.setText("Als CSV Abspeichern");
         //export.setSize(30, 10);
         export.addSelectionListener(new SelectionAdapterExtension(shell));
+        final Button close = new Button(content, SWT.PUSH);
+        close.setText("Beenden");
+        close.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent e) {
+        		shell.close();
+        	}
+        });
+        content.pack();
     }
     
     
