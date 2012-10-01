@@ -82,8 +82,7 @@ public class ResultsDialog extends Dialog {
             final TableItem ti = new TableItem(table, SWT.NULL);
             ti.setText(0, String.valueOf(result.nummer));
             ti.setText(1, f.format(result.summe));
-            ti.setText(2, f.format(result.prozKiga));
-            ti.setText(3, f.format(result.prozSeller));
+            ti.setText(2, f.format(result.prozSeller));
         }
         content.setSize(450, 500);
         sc.setContent(content);
